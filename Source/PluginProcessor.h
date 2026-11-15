@@ -49,11 +49,11 @@ private:
     std::array<Channel, 2> channels;
     std::atomic<float> *power, *input, *output, *attack, *release, *ratio, *link, *bypass, *fix, *scFilter;
     void process(juce::AudioBuffer<float>&, juce::MidiBuffer&, bool hostBypassed);
-    void processEngine(juce::dsp::AudioBlock<float>&, int channelsToProcess, int mode);
+    void processEngine(juce::dsp::AudioBlock<float>&, const juce::dsp::AudioBlock<float>*, int channelsToProcess, int mode);
     juce::SmoothedValue<float> inputGain, outputGain, wet, attackPole, releasePole, slowReleasePole, linkMix, scFilterMix;
     juce::SmoothedValue<float> matchGain, matchMix;
-    std::unique_ptr<juce::dsp::Oversampling<float>> oversampling;
-    juce::AudioBuffer<float> engineBuffer, dryDelay;
+    std::unique_ptr<juce::dsp::Oversampling<float>> oversampling, keyOversampling;
+    juce::AudioBuffer<float> engineBuffer, keyBuffer, dryDelay;
     static constexpr int processingCapacity = 512;
     int delayPosition = 0;
     double rate = 44100;

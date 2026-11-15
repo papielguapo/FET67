@@ -1,12 +1,22 @@
 # FET 67 — papielguapo
 
-**Fabricante: papielguapo · 1.2.1 Clean · Windows x64**
+**Fabricante: papielguapo · 1.2.2 Clean + Sidechain · Windows x64**
 
 ![FET 67 con POWER a la izquierda y FIX bajo el medidor](Preview-v1.2.png)
 
 Compresor FET mono/estéreo, C++17/JUCE 9.0.5, VST3 y Standalone. Detector de realimentación, recuperación dependiente del programa y coloración asimétrica. Es un modelo original comparado con CLA-76 Bluey; no se ha demostrado equivalencia 1:1 ni preferencia en escucha ciega.
 
-## Novedades de 1.2.1 Clean
+## Sidechain externo de 1.2.2
+
+Bus de entrada **Sidechain** opcional mono/estéreo, apagado por defecto y controlado por el DAW. No hay botones nuevos ni cambios en la skin. Con el bus desactivado se utiliza el detector interno de siempre. Con el bus activado, su audio externo dispara la compresión del audio principal y no se mezcla con él; un bus externo activo pero silencioso no vuelve automáticamente al detector interno. INPUT también ajusta la sensibilidad del detector externo; la ganancia virtual de realimentación conserva la calibración del controlador.
+
+El SC FILTER existente aplica sus 80 Hz también al detector externo. El enlace estéreo se conserva; una entrada principal mono reacciona al mayor nivel de los dos canales del key estéreo. La entrada externa se sobremuestrea a 8× con el mismo filtro de subida que la principal. No cambia la latencia declarada.
+
+En **FL Studio**, crea el envío «Sidechain to this track» desde la pista que dispara hacia la que contiene FET 67. En el wrapper del plugin, abre **Processing → Connections**, habilita/asigna la entrada auxiliar **Sidechain** a ese envío. La selección de fuente se hace en el host. [Manual oficial del wrapper](https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/wrapper.htm). El procedimiento está documentado, pero no se ha validado mediante control de FL en este equipo.
+
+Pruebas y procedencia de 1.2.2: [Validation/Sidechain-1.2.2/RESULTADOS.md](Validation/Sidechain-1.2.2/RESULTADOS.md).
+
+## Base de 1.2.1 Clean
 
 Menos saturación al subir INPUT: se reduce la no linealidad de entrada y la coloración par/impar de la etapa FET. La saturación de seguridad de salida empieza ahora en 0 dBFS en lugar de −4 dBFS; no es un limitador de picos. Conserva los controles, ratios, tiempos, SC FILTER y FIX. Puede superar 0 dBFS: ajusta OUTPUT para dejar margen.
 
@@ -63,7 +73,7 @@ Se preparó un A/B educativo privado con la voz de Al James, Schoolboy Fascinati
 
 ## Instalar
 
-Descarga el [ZIP de 1.2.1 Clean RC1](https://github.com/papielguapo/FET67/releases/tag/v1.2.1-rc1) y copia la carpeta completa `Binaries/FET 67.vst3` a `C:\Program Files\Common Files\VST3`. Puede requerir permisos de administrador. Cierra instancias cargadas antes de actualizar, reescanea plugins y busca **FET 67 / Papielguapo**. También se entrega Standalone. No se incluye instalador ni firma Authenticode.
+Descarga el [ZIP de 1.2.2 Clean + Sidechain RC1](https://github.com/papielguapo/FET67/releases/tag/v1.2.2-rc1) y copia la carpeta completa `Binaries/FET 67.vst3` a `C:\Program Files\Common Files\VST3`. Puede requerir permisos de administrador. Cierra instancias cargadas antes de actualizar, reescanea plugins y busca **FET 67 / Papielguapo**. También se entrega Standalone. No se incluye instalador ni firma Authenticode.
 
 ## Compilar y validar
 

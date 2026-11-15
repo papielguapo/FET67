@@ -119,7 +119,7 @@ int main(int argc,char** argv)
         require(b.getRMSLevel(1,0,128)>linkedRight*2,"Dual mono did not release quiet channel independently");
         for(double sr:{44100.0,96000.0,192000.0})
         {
-            FET67Processor mono;juce::AudioProcessor::BusesLayout layout;layout.inputBuses.add(juce::AudioChannelSet::mono());layout.outputBuses.add(juce::AudioChannelSet::mono());
+            FET67Processor mono;juce::AudioProcessor::BusesLayout layout;layout.inputBuses.add(juce::AudioChannelSet::mono());layout.inputBuses.add(juce::AudioChannelSet::disabled());layout.outputBuses.add(juce::AudioChannelSet::mono());
             require(mono.setBusesLayout(layout),"Mono layout rejected");mono.prepareToPlay(sr,511);set(mono,"input",10);set(mono,"output",10);mono.reset();
             juce::AudioBuffer<float> m(1,511);
             for(int block=0;block<50;++block){for(int i=0;i<511;++i)m.setSample(0,i,std::sin(static_cast<float>(block*511+i)*0.17f));mono.processBlock(m,midi);for(int i=0;i<511;++i)require(std::isfinite(m.getSample(0,i))&&std::abs(m.getSample(0,i))<2,"Extreme drive unstable");}

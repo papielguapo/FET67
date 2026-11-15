@@ -47,7 +47,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout FET67Processor::makeParamete
     return p;
 }
 FET67Processor::FET67Processor()
-    : AudioProcessor(BusesProperties().withInput("Input", juce::AudioChannelSet::stereo(), true).withOutput("Output", juce::AudioChannelSet::stereo(), true)),
+    : AudioProcessor(BusesProperties().withInput("Input", juce::AudioChannelSet::stereo(), true)
+        .withInput("Sidechain", juce::AudioChannelSet::stereo(), false)
+        .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       apvts(*this, nullptr, "FET67", makeParameters())
 {
     power = apvts.getRawParameterValue("power"); input = apvts.getRawParameterValue("input");
@@ -59,8 +61,11 @@ FET67Processor::FET67Processor()
 }
 bool FET67Processor::isBusesLayoutSupported(const BusesLayout& l) const
 {
+    if (l.inputBuses.size() != 2 || l.outputBuses.size() != 1) return false;
+    const auto key = l.getChannelSet(true, 1);
     return (l.getMainInputChannelSet() == juce::AudioChannelSet::mono() || l.getMainInputChannelSet() == juce::AudioChannelSet::stereo())
-        && l.getMainInputChannelSet() == l.getMainOutputChannelSet();
+        && l.getMainInputChannelSet() == l.getMainOutputChannelSet()
+        && (key.isDisabled() || key == juce::AudioChannelSet::mono() || key == juce::AudioChannelSet::stereo());
 }
 void FET67Processor::prepareToPlay(double sr, int)
 {
@@ -68,9 +73,13 @@ void FET67Processor::prepareToPlay(double sr, int)
     oversampling = std::make_unique<juce::dsp::Oversampling<float>>(
         2, 3, juce::dsp::Oversampling<float>::filterHalfBandFIREquiripple, true, true);
     oversampling->initProcessing(processingCapacity);
+    keyOversampling = std::make_unique<juce::dsp::Oversampling<float>>(
+        2, 3, juce::dsp::Oversampling<float>::filterHalfBandFIREquiripple, true, true);
+    keyOversampling->initProcessing(processingCapacity);
     engineRate = rate * static_cast<double>(oversampling->getOversamplingFactor());
     setLatencySamples(juce::roundToInt(oversampling->getLatencyInSamples()));
     engineBuffer.setSize(2, processingCapacity);
+    keyBuffer.setSize(2, processingCapacity);
     dryDelay.setSize(2, getLatencySamples() + 1);
     for (auto& c : channels)
     {
@@ -98,6 +107,8 @@ void FET67Processor::reset()
         c.delayed = c.fast = c.slow = c.lag = c.gr = 0;
     }
     if (oversampling != nullptr) oversampling->reset();
+    if (keyOversampling != nullptr) keyOversampling->reset();
+    keyBuffer.clear();
     engineBuffer.clear(); dryDelay.clear(); delayPosition = 0;
     inputGain.setCurrentAndTargetValue(inputLevel(input->load()));
     outputGain.setCurrentAndTargetValue(gain((output->load() - 5) * 4.8f));
@@ -118,7 +129,7 @@ void FET67Processor::reset()
     currentGrDb.store(0); currentOutDb.store(-100);
 }
 
-void FET67Processor::processEngine(juce::dsp::AudioBlock<float>& block, int n, int mode)
+void FET67Processor::processEngine(juce::dsp::AudioBlock<float>& block, const juce::dsp::AudioBlock<float>* key, int n, int mode)
 {
     constexpr float ratios[] {4,8,12,20,24};
     constexpr float thresholds[] {-18,-16.5f,-15,-13.5f,-21.5f};
@@ -132,11 +143,16 @@ void FET67Processor::processEngine(juce::dsp::AudioBlock<float>& block, int n, i
         const float src = slowReleasePole.getNextValue(), linked = linkMix.getNextValue();
         const float filteredMix = scFilterMix.getNextValue();
         std::array<float, 2> detection {};
-        for (int ch = 0; ch < n; ++ch)
+        const int detectorChannels = key != nullptr ? 2 : n;
+        for (int ch = 0; ch < detectorChannels; ++ch)
         {
             auto& state = channels[static_cast<size_t>(ch)];
-            const float filtered = state.detectorHP.tick(state.delayed);
-            const float raw = std::abs(state.delayed);
+            // Apply the previous gain-cell attenuation to the external key:
+            // preserve feedback controller calibration rather than using R-1 feed-forward.
+            const float signal = key != nullptr ? key->getSample(ch, i) * inG
+                * gain(-channels[static_cast<size_t>(n == 1 ? 0 : ch)].gr) : state.delayed;
+            const float filtered = state.detectorHP.tick(signal);
+            const float raw = std::abs(signal);
             detection[static_cast<size_t>(ch)] = raw + filteredMix * (std::abs(filtered) - raw);
         }
         const float maxDetector = juce::jmax(detection[0], detection[1]);
@@ -148,7 +164,8 @@ void FET67Processor::processEngine(juce::dsp::AudioBlock<float>& block, int n, i
             // Clean voicing: more headroom before the feedback gain cell.
             constexpr float ironDrive = 0.015f;
             x = c.inputHP.tick(std::tanh(x * ironDrive) / ironDrive);
-            float detector = detection[static_cast<size_t>(ch)] + linked * (maxDetector - detection[static_cast<size_t>(ch)]);
+            float detector = key != nullptr && n == 1 ? maxDetector
+                : detection[static_cast<size_t>(ch)] + linked * (maxDetector - detection[static_cast<size_t>(ch)]);
             if (all) { c.lag = lagPole * c.lag + (1 - lagPole) * detector; detector = c.lag; }
             const float target = reduction(db(detector), thresholds[mode], knees[mode], ratios[mode]);
             const float fastPole = target > c.fast ? ac : rc;
@@ -191,9 +208,11 @@ void FET67Processor::process(juce::AudioBuffer<float>& b, juce::MidiBuffer& midi
 {
     juce::ScopedNoDenormals guard;
     midi.clear();
-    const int n = juce::jmin(2, juce::jmin(b.getNumChannels(), getTotalNumInputChannels()));
-    for (int ch = n; ch < b.getNumChannels(); ++ch) b.clear(ch, 0, b.getNumSamples());
+    auto main = getBusBuffer(b, false, 0);
+    const int n = juce::jmin(2, main.getNumChannels());
     if (n == 0 || oversampling == nullptr) return;
+    const bool external = getBus(true, 1)->isEnabled();
+    auto key = getBusBuffer(b, true, 1);
     inputGain.setTargetValue(inputLevel(input->load()));
     outputGain.setTargetValue(gain((output->load() - 5) * 4.8f));
     linkMix.setTargetValue(link->load() > 0.5f ? 1.0f : 0.0f);
@@ -216,13 +235,26 @@ void FET67Processor::process(juce::AudioBuffer<float>& b, juce::MidiBuffer& midi
         {
             auto* dest = engineBuffer.getWritePointer(ch);
             if (ch >= n) { juce::FloatVectorOperations::clear(dest, count); continue; }
-            const auto* source = b.getReadPointer(ch, offset);
+            const auto* source = main.getReadPointer(ch, offset);
             for (int i = 0; i < count; ++i)
                 dest[i] = std::isfinite(source[i]) ? juce::jlimit(-64.0f, 64.0f, source[i]) : 0.0f;
         }
         auto baseBlock = juce::dsp::AudioBlock<float>(engineBuffer).getSubBlock(0, static_cast<size_t>(count));
         auto upBlock = oversampling->processSamplesUp(juce::dsp::AudioBlock<const float>(baseBlock));
-        processEngine(upBlock, n, mode);
+        if (external && key.getNumChannels() > 0)
+        {
+            for (int ch = 0; ch < 2; ++ch)
+            {
+                const auto* source = key.getReadPointer(juce::jmin(ch, key.getNumChannels() - 1), offset);
+                auto* dest = keyBuffer.getWritePointer(ch);
+                for (int i = 0; i < count; ++i)
+                    dest[i] = std::isfinite(source[i]) ? juce::jlimit(-64.0f, 64.0f, source[i]) : 0.0f;
+            }
+            auto keyBase = juce::dsp::AudioBlock<float>(keyBuffer).getSubBlock(0, static_cast<size_t>(count));
+            auto keyUp = keyOversampling->processSamplesUp(juce::dsp::AudioBlock<const float>(keyBase));
+            processEngine(upBlock, &keyUp, n, mode);
+        }
+        else processEngine(upBlock, nullptr, n, mode);
         oversampling->processSamplesDown(baseBlock);
         for (int i = 0; i < count; ++i)
         {
@@ -233,7 +265,7 @@ void FET67Processor::process(juce::AudioBuffer<float>& b, juce::MidiBuffer& midi
             const int readPosition = (delayPosition + 1) % delayLength;
             for (int ch = 0; ch < n; ++ch)
             {
-                auto* target = b.getWritePointer(ch, offset);
+                auto* target = main.getWritePointer(ch, offset);
                 const float dry = std::isfinite(target[i]) ? target[i] : 0.0f;
                 dryDelay.setSample(ch, delayPosition, dry);
                 const float delayedDry = dryDelay.getSample(ch, readPosition);

@@ -263,12 +263,56 @@ inline void sidechainFilter()
     std::cout<<"SC_FILTER 40Hz_GR_off="<<lowOff<<" on="<<lowOn<<" 1kHz_GR_off="<<midOff<<" on="<<midOn<<" inactive_audio_error="<<error<<" PASS\n";
 }
 
+inline void externalSidechain()
+{
+    for(int mainChannels : {1,2}) for(int keyChannels : {1,2})
+    {
+        auto runKey = [=](float keyLevel, bool silentMain, bool filter)
+        {
+            FET67Processor p;auto layout=p.getBusesLayout();
+            layout.inputBuses.set(0,mainChannels==1?juce::AudioChannelSet::mono():juce::AudioChannelSet::stereo());
+            layout.outputBuses.set(0,layout.inputBuses[0]);
+            layout.inputBuses.set(1,keyChannels==1?juce::AudioChannelSet::mono():juce::AudioChannelSet::stereo());
+            require(p.setBusesLayout(layout),"External sidechain layout rejected");
+            set(p,"scFilter",filter?1.f:0.f);p.prepareToPlay(48000,128);
+            juce::AudioBuffer<float> b(mainChannels+keyChannels,128);juce::MidiBuffer midi;
+            for(int block=0;block<1125;++block)
+            {
+                for(int i=0;i<128;++i)
+                {
+                    const float tone=std::sin(juce::MathConstants<double>::twoPi*40*(block*128+i)/48000.0);
+                    for(int ch=0;ch<mainChannels;++ch)b.setSample(ch,i,silentMain?0.f:0.005f*tone);
+                    // With a stereo key, only its right channel drives the detector.
+                    for(int ch=0;ch<keyChannels;++ch)b.setSample(mainChannels+ch,i,keyChannels==2&&ch==0?0.f:keyLevel*tone);
+                }
+                p.processBlock(b,midi);
+                if(silentMain) for(int ch=0;ch<mainChannels;++ch)require(b.getMagnitude(ch,0,128)==0,"Sidechain leaked into main audio");
+            }
+            return p.currentGrDb.load();
+        };
+        const float silent=runKey(0,false,false),loud=runKey(0.5f,false,false),filtered=runKey(0.5f,false,true);
+        require(silent<0.01f,"Silent external key unexpectedly compresses");
+        require(loud>5,"External key does not drive compression");
+        require(loud-filtered>3,"SC FILTER does not filter external detection");
+        runKey(0.5f,true,false);
+        std::cout<<"EXTERNAL_SC main="<<mainChannels<<" key="<<keyChannels<<" silent_GR="<<silent<<" loud_GR="<<loud<<" filtered_GR="<<filtered<<" no_leak PASS\n";
+    }
+    FET67Processor p;auto layout=p.getBusesLayout();layout.inputBuses.set(1,juce::AudioChannelSet::stereo());
+    require(p.setBusesLayout(layout),"Stereo sidechain rejected");p.prepareToPlay(48000,16);
+    juce::AudioBuffer<float> b(4,4097);juce::MidiBuffer midi;
+    for(int ch=0;ch<4;++ch)for(int i=0;i<4097;++i)b.setSample(ch,i,ch>=2&&i%7==0?std::numeric_limits<float>::quiet_NaN():0.1f);
+    beginAllocationMonitoring();p.processBlock(b,midi);const auto allocations=endAllocationMonitoring();
+    require(allocations==0,"External key allocates in callback");
+    for(int ch=0;ch<2;++ch)for(int i=0;i<4097;++i)require(std::isfinite(b.getSample(ch,i)),"Invalid key poisoned main audio");
+    std::cout<<"EXTERNAL_SC oversized_and_invalid_key allocations="<<allocations<<" PASS\n";
+}
+
 inline int run()
 {
     bypassAndMeter();latencyAndRobustness();
     require(aliasProbe(48000,10000)<-65,"48kHz alias rejection below release threshold");
     require(aliasProbe(44100,10000)<-65,"44.1kHz alias rejection below release threshold");
-    blockInvarianceAndPerformance();realtimeAllocation();silenceFloor();fractionalSwitchState();levelMatch();sidechainFilter();
+    blockInvarianceAndPerformance();realtimeAllocation();silenceFloor();fractionalSwitchState();levelMatch();sidechainFilter();externalSidechain();
     FET67Processor clean;set(clean,"input",5.8f);set(clean,"attack",3);
     const auto cleanHarmonics=spectrum(clean);
     require(cleanHarmonics[1]<-56,"Clean voicing has excessive H2 at reference drive");
