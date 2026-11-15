@@ -263,6 +263,43 @@ inline void sidechainFilter()
     std::cout<<"SC_FILTER 40Hz_GR_off="<<lowOff<<" on="<<lowOn<<" 1kHz_GR_off="<<midOff<<" on="<<midOn<<" inactive_audio_error="<<error<<" PASS\n";
 }
 
+inline void hostedExternalSidechain(juce::AudioProcessor& p)
+{
+    require(p.getBusCount(true)==2,"Hosted VST3 does not expose an auxiliary input");
+    auto layout=p.getBusesLayout();layout.inputBuses.set(0,juce::AudioChannelSet::stereo());
+    layout.inputBuses.set(1,juce::AudioChannelSet::stereo());layout.outputBuses.set(0,juce::AudioChannelSet::stereo());
+    require(p.setBusesLayout(layout),"Hosted VST3 rejects stereo sidechain routing");
+    auto render=[&](float keyLevel,bool muteMain)
+    {
+        p.setRateAndBufferSizeDetails(48000,128);p.prepareToPlay(48000,128);p.reset();
+        juce::AudioBuffer<float> b(4,128);juce::MidiBuffer midi;double energy=0;int samples=0;float peak=0;
+        for(int block=0;block<1125;++block)
+        {
+            for(int i=0;i<128;++i)
+            {
+                const double time=(block*128+i)/48000.0;
+                const float main=muteMain?0.f:0.005f*std::sin(juce::MathConstants<double>::twoPi*997*time);
+                b.setSample(0,i,main);b.setSample(1,i,main);
+                b.setSample(2,i,0);b.setSample(3,i,keyLevel*std::sin(juce::MathConstants<double>::twoPi*1000*time));
+            }
+            p.processBlock(b,midi);
+            for(int i=0;i<128;++i)for(int ch=0;ch<2;++ch)
+            {
+                const float x=b.getSample(ch,i);require(std::isfinite(x),"Hosted key produced nonfinite output");
+                peak=juce::jmax(peak,std::abs(x));
+                if(block>=750){energy+=static_cast<double>(x)*x;++samples;}
+            }
+        }
+        p.releaseResources();
+        if(muteMain)require(peak==0,"Hosted sidechain leaks to output");
+        return 10*std::log10(juce::jmax(1e-30,energy/samples));
+    };
+    const double without=render(0,false),with=render(0.5f,false);
+    require(without-with>4,"Hosted external key does not attenuate main audio");
+    render(0.5f,true);
+    std::cout<<"HOSTED_EXTERNAL_SC input_buses="<<p.getBusCount(true)<<" silent_key_RMS="<<without<<" active_key_RMS="<<with<<" attenuation_dB="<<without-with<<" no_leak PASS\n";
+}
+
 inline void externalSidechain()
 {
     for(int mainChannels : {1,2}) for(int keyChannels : {1,2})

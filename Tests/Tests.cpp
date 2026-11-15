@@ -76,6 +76,8 @@ int main(int argc,char** argv)
             while(!done&&juce::Time::getMillisecondCounter()-start<30000)juce::MessageManager::getInstance()->runDispatchLoopUntil(20);
             require(instance!=nullptr,error.isEmpty()?"Reference load timeout":error.toRawUTF8());
             dumpParameters(*instance);
+            if(argc>3&&juce::String(argv[3])=="--external-key-test")
+            {validation::hostedExternalSidechain(*instance);return 0;}
             if(argc>3&&(juce::String(argv[3])=="--measure"||juce::String(argv[3])=="--spectrum"||juce::String(argv[3])=="--render-audio"))
             {
                 // Further arguments are index=normalisedValue, taken from the dumped public parameter metadata.

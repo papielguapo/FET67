@@ -1,0 +1,90 @@
+Start testing: Nov 15 21:04 Hora estándar romance
+----------------------------------------------------------
+1/3 Testing: DSP
+1/3 Test: DSP
+Command: "C:/Users/anton/Documents/Codex/2026-11-15/files-pasted-by-the-user-role/work/build9/FET67Tests_artefacts/Release/FET67Validation.exe"
+Directory: C:/Users/anton/Documents/Codex/2026-11-15/files-pasted-by-the-user-role/work/build9
+"DSP" start time: Nov 15 21:04 Hora estándar romance
+Output:
+----------------------------------------------------------
+Ratio 0 low -63.0237 high -16.9861 GR 12.0172
+Ratio 1 low -63.0237 high -17.6837 GR 12.7152
+Ratio 2 low -63.0237 high -16.9195 GR 11.9518
+Ratio 3 low -63.0237 high -15.939 GR 10.972
+Ratio 4 low -63.0237 high -22.8464 GR 17.8898
+PASS: bypass, input mute, all ratios, finite output, stereo link / dual mono, state persistence, mono 44.1/96/192 kHz extreme drive
+<end of output>
+Test time =   3.68 sec
+----------------------------------------------------------
+Test Passed.
+"DSP" end time: Nov 15 21:04 Hora estándar romance
+"DSP" time elapsed: 00:00:03
+----------------------------------------------------------
+
+2/3 Testing: ExtendedValidation
+2/3 Test: ExtendedValidation
+Command: "C:/Users/anton/Documents/Codex/2026-11-15/files-pasted-by-the-user-role/work/build9/FET67Tests_artefacts/Release/FET67Validation.exe" "--validate"
+Directory: C:/Users/anton/Documents/Codex/2026-11-15/files-pasted-by-the-user-role/work/build9
+"ExtendedValidation" start time: Nov 15 21:04 Hora estándar romance
+Output:
+----------------------------------------------------------
+BYPASS first-block excess_dB=0.187564 after-fade residual=0 latency_samples=65
+METER measured_dB=-15.0514 expected_dB=-15.0515
+ROBUST sr=44100 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=48000 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=88200 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=96000 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=176400 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=192000 oversized=4097 prepared=16 latency=65 PASS
+ALIAS sr=48000 input_Hz=10000 folded_Hz=18000 dBc=-126.263
+ALIAS sr=44100 input_Hz=10000 folded_Hz=14100 dBc=-131.306
+BLOCK_INVARIANCE max_error=0
+PERFORMANCE block=32 single-core-average-percent=7.46815 worst_ms=0.1115 deadline_ms=0.666667
+PERFORMANCE block=64 single-core-average-percent=7.55714 worst_ms=0.1956 deadline_ms=1.33333
+PERFORMANCE block=128 single-core-average-percent=7.57259 worst_ms=0.3466 deadline_ms=2.66667
+PERFORMANCE block=512 single-core-average-percent=7.36683 worst_ms=1.0269 deadline_ms=10.6667
+REALTIME_CPP_NEW allocations=0 (native malloc is outside this monitor)
+SILENCE fresh_peak=0 tail_RMS_dBFS=-300 tail_peak=0 (numerical reporting floor -300 dBFS)
+FRACTIONAL_SWITCH_STATE PASS
+FIX matched_RMS=-23.0298 input_RMS=-23.0103 disabled_residual=0 PASS
+SC_FILTER 40Hz_GR_off=8.18644 on=3.14659 1kHz_GR_off=8.89044 on=8.8644 inactive_audio_error=0 PASS
+EXTERNAL_SC main=1 key=1 silent_GR=0 loud_GR=8.85254 filtered_GR=3.72518 no_leak PASS
+EXTERNAL_SC main=1 key=2 silent_GR=0 loud_GR=8.85254 filtered_GR=3.72518 no_leak PASS
+EXTERNAL_SC main=2 key=1 silent_GR=0 loud_GR=8.85254 filtered_GR=3.72518 no_leak PASS
+EXTERNAL_SC main=2 key=2 silent_GR=0 loud_GR=8.85254 filtered_GR=3.72518 no_leak PASS
+EXTERNAL_SC oversized_and_invalid_key allocations=0 PASS
+SPECTRUM harmonic=1 dBc=0
+SPECTRUM harmonic=2 dBc=-60.6246
+SPECTRUM harmonic=3 dBc=-60.5413
+SPECTRUM harmonic=4 dBc=-99.2953
+CLEAN_COLOUR reference_input=5.8 attack=3 PASS
+SPECTRUM harmonic=1 dBc=0
+SPECTRUM harmonic=2 dBc=-51.4022
+SPECTRUM harmonic=3 dBc=-46.1002
+SPECTRUM harmonic=4 dBc=-77.1843
+EXTENDED VALIDATION PASS
+<end of output>
+Test time =  11.50 sec
+----------------------------------------------------------
+Test Passed.
+"ExtendedValidation" end time: Nov 15 21:04 Hora estándar romance
+"ExtendedValidation" time elapsed: 00:00:11
+----------------------------------------------------------
+
+3/3 Testing: MissingPluginRejected
+3/3 Test: MissingPluginRejected
+Command: "C:/Users/anton/Documents/Codex/2026-11-15/files-pasted-by-the-user-role/work/build9/FET67Tests_artefacts/Release/FET67Validation.exe" "--scan" "C:/Users/anton/Documents/Codex/2026-11-15/files-pasted-by-the-user-role/work/build9/missing-plugin.vst3"
+Directory: C:/Users/anton/Documents/Codex/2026-11-15/files-pasted-by-the-user-role/work/build9
+"MissingPluginRejected" start time: Nov 15 21:04 Hora estándar romance
+Output:
+----------------------------------------------------------
+No VST3 plugins found at requested path
+<end of output>
+Test time =   0.17 sec
+----------------------------------------------------------
+Test Passed.
+"MissingPluginRejected" end time: Nov 15 21:04 Hora estándar romance
+"MissingPluginRejected" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 15 21:04 Hora estándar romance
