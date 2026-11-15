@@ -9,14 +9,15 @@ ROBUST sr=192000 oversized=4097 prepared=16 latency=65 PASS
 ALIAS sr=48000 input_Hz=10000 folded_Hz=18000 dBc=-106.23
 ALIAS sr=44100 input_Hz=10000 folded_Hz=14100 dBc=-111.437
 BLOCK_INVARIANCE max_error=0
-PERFORMANCE block=32 single-core-average-percent=9.31606 worst_ms=1.5439 deadline_ms=0.666667
-PERFORMANCE block=64 single-core-average-percent=8.70761 worst_ms=2.2982 deadline_ms=1.33333
-PERFORMANCE block=128 single-core-average-percent=9.23351 worst_ms=1.9655 deadline_ms=2.66667
-PERFORMANCE block=512 single-core-average-percent=8.58548 worst_ms=1.8173 deadline_ms=10.6667
+PERFORMANCE block=32 single-core-average-percent=8.29614 worst_ms=0.1461 deadline_ms=0.666667
+PERFORMANCE block=64 single-core-average-percent=8.40907 worst_ms=0.2097 deadline_ms=1.33333
+PERFORMANCE block=128 single-core-average-percent=8.88212 worst_ms=0.4407 deadline_ms=2.66667
+PERFORMANCE block=512 single-core-average-percent=7.79679 worst_ms=1.3188 deadline_ms=10.6667
 REALTIME_CPP_NEW allocations=0 (native malloc is outside this monitor)
 SILENCE fresh_peak=0 tail_RMS_dBFS=-300 tail_peak=0 (numerical reporting floor -300 dBFS)
 FRACTIONAL_SWITCH_STATE PASS
 FIX matched_RMS=-23.0298 input_RMS=-23.0103 disabled_residual=0 PASS
+SC_FILTER 40Hz_GR_off=8.18484 on=3.14598 1kHz_GR_off=8.88863 on=8.86261 inactive_audio_error=0 PASS
 SPECTRUM harmonic=1 dBc=0
 SPECTRUM harmonic=2 dBc=-35.9642
 SPECTRUM harmonic=3 dBc=-24.1923

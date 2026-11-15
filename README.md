@@ -16,7 +16,13 @@ Compresor FET mono/estéreo, C++17/JUCE 9.0.5, VST3 y Standalone. Detector de re
 - Estado compatible con automatización fraccionaria de interruptores y con proyectos anteriores.
 - Procesamiento por fragmentos de capacidad fija, preparado fuera del callback.
 
-El DSP cambia el sonido de sesiones anteriores. Se mantienen fabricante `Papi`, código `Ft67` y los IDs antiguos. El parámetro `bypass` continúa para el DAW y para proyectos antiguos; su botón se ha sustituido por **FIX**. POWER permanece junto al piloto violeta.
+El DSP cambia el sonido de sesiones anteriores. Se mantienen fabricante `Papi`, código `Ft67` y los IDs antiguos. El parámetro `bypass` continúa para el DAW y para proyectos antiguos; su botón se ha sustituido por **FIX**. POWER permanece junto al piloto violeta. **SC FILTER** ocupa el antiguo hueco de LINK; los proyectos nuevos siguen enlazados en estéreo y el parámetro LINK antiguo se conserva para automatización y sesiones previas.
+
+## SC FILTER
+
+Apagado por defecto. Al activarlo, un paso alto de **80 Hz / primer orden** actúa únicamente sobre la señal del detector. Reduce la influencia de graves, proximidad y golpes de aire sobre la compresión; no recorta directamente el grave de la ruta de audio. El cambio se interpola durante 20 ms y el filtro mantiene su historia mientras está apagado. No es un de-esser ni elimina los golpes de aire de la grabación.
+
+En el ensayo de tono a 40 Hz, GR pasa de 8,18 a 3,15 dB; a 1 kHz pasa de 8,889 a 8,863 dB. Con compresión inactiva, la salida ON/OFF coincide exactamente. Son medidas de esos ajustes, no una garantía de cuántos dB cambiará cualquier voz. KI no se ha añadido.
 
 ## FIX: comparar niveles
 
@@ -36,7 +42,7 @@ Con FIX apagado, INPUT y OUTPUT son completamente manuales y no hay autogain. Lo
 | RELEASE | 1 = 50 ms, 9 = 1100 ms; recuperación dependiente del programa |
 | RATIO | 4:1, 8:1, 12:1, 20:1 y ALL nominal 24:1 |
 | ALL | Ataque de 450 µs, lag del detector y recuperación modificada |
-| LINK | ON comparte detección; OFF permite dual mono |
+| SC FILTER | Paso alto de 80 Hz solo en el detector; OFF por defecto |
 | METER | GR o RMS OUT; 0 OUT = −18 dBFS RMS |
 
 Los tiempos son constantes del modelo, no tiempos efectivos certificados frente al hardware. CLIP es un escalón de la escala y no un medidor de true peak. La saturación suave no es un limitador brickwall. El bypass asentado conserva los samples secos exactamente, desplazados los 65 samples declarados.
@@ -66,5 +72,7 @@ ctest --test-dir build -C Release --output-on-failure
 CMake usa `C:/JUCE` si contiene JUCE 7/8/9; en su ausencia descarga JUCE 9.0.5 oficial. Otra copia local: `-DFET67_JUCE_PATH="D:/SDK/JUCE"`. Los binarios están en `build/FET67_artefacts/Release`; las pruebas en `build/FET67Tests_artefacts/Release/FET67Validation.exe`. La copia automática está activada por defecto; el ejemplo la desactiva para no escribir en Program Files durante el build.
 
 El workflow Windows validation compila con Visual Studio 2022, ejecuta CTest y pluginval oficial 1.0.4 nivel 10, y conserva artefactos. Consulta [Validation/STATUS.md](Validation/STATUS.md) y sus logs para distinguir lo comprobado de lo pendiente. Los datos de `Reference/` son históricos de 1.1, no una calibración de 1.2.
+
+El [run independiente 43741209722](https://github.com/papielguapo/FET67/actions/runs/43741209722) terminó en SUCCESS. El ZIP usa sus binarios, que dependen del runtime de Microsoft Visual C++ x64 y de los componentes de Windows enumerados en `Validation/Dependencies.txt`.
 
 La aprobación auditiva, la prueba en FL Studio, otros hosts, el validador independiente de Steinberg y los requisitos de distribución deben registrarse por separado. No se declara validación comercial completa.

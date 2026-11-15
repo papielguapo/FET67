@@ -43,6 +43,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout FET67Processor::makeParamete
     addBool("meterMode", "Meter Output", false);
     addBool("bypass", "Bypass", false);
     addBool("fix", "FIX Level Match", false);
+    addBool("scFilter", "SC Filter 80 Hz", false);
     return p;
 }
 FET67Processor::FET67Processor()
@@ -54,6 +55,7 @@ FET67Processor::FET67Processor()
     release = apvts.getRawParameterValue("release"); ratio = apvts.getRawParameterValue("ratio");
     link = apvts.getRawParameterValue("link"); bypass = apvts.getRawParameterValue("bypass");
     fix = apvts.getRawParameterValue("fix");
+    scFilter = apvts.getRawParameterValue("scFilter");
 }
 bool FET67Processor::isBusesLayoutSupported(const BusesLayout& l) const
 {
@@ -74,8 +76,9 @@ void FET67Processor::prepareToPlay(double sr, int)
     {
         c.inputHP.pole = static_cast<float>(std::exp(-juce::MathConstants<double>::twoPi * 18.0 / engineRate));
         c.fetHP.pole = static_cast<float>(std::exp(-juce::MathConstants<double>::twoPi * 20.0 / engineRate));
+        c.detectorHP.pole = static_cast<float>(std::exp(-juce::MathConstants<double>::twoPi * 80.0 / engineRate));
     }
-    for (auto* smooth : { &inputGain, &outputGain, &attackPole, &releasePole, &slowReleasePole, &linkMix })
+    for (auto* smooth : { &inputGain, &outputGain, &attackPole, &releasePole, &slowReleasePole, &linkMix, &scFilterMix })
         smooth->reset(engineRate, 0.02);
     wet.reset(rate, 0.02);
     matchMix.reset(rate, 0.02); matchGain.reset(rate, 1.0);
@@ -91,7 +94,7 @@ void FET67Processor::reset()
 {
     for (auto& c : channels)
     {
-        c.inputHP.clear(); c.fetHP.clear();
+        c.inputHP.clear(); c.fetHP.clear(); c.detectorHP.clear();
         c.delayed = c.fast = c.slow = c.lag = c.gr = 0;
     }
     if (oversampling != nullptr) oversampling->reset();
@@ -110,6 +113,7 @@ void FET67Processor::reset()
     releasePole.setCurrentAndTargetValue(static_cast<float>(std::exp(-1.0 / (engineRate * r))));
     slowReleasePole.setCurrentAndTargetValue(static_cast<float>(std::exp(-1.0 / (engineRate * r * (all ? 5 : 3)))));
     linkMix.setCurrentAndTargetValue(link->load() > 0.5f ? 1.0f : 0.0f);
+    scFilterMix.setCurrentAndTargetValue(scFilter->load() > 0.5f ? 1.0f : 0.0f);
     rms.fill(0); grMeter = 0;
     currentGrDb.store(0); currentOutDb.store(-100);
 }
@@ -126,7 +130,16 @@ void FET67Processor::processEngine(juce::dsp::AudioBlock<float>& block, int n, i
         const float inG = inputGain.getNextValue(), outG = outputGain.getNextValue();
         const float ac = attackPole.getNextValue(), rc = releasePole.getNextValue();
         const float src = slowReleasePole.getNextValue(), linked = linkMix.getNextValue();
-        const float maxDetector = juce::jmax(std::abs(channels[0].delayed), n == 2 ? std::abs(channels[1].delayed) : 0.0f);
+        const float filteredMix = scFilterMix.getNextValue();
+        std::array<float, 2> detection {};
+        for (int ch = 0; ch < n; ++ch)
+        {
+            auto& state = channels[static_cast<size_t>(ch)];
+            const float filtered = state.detectorHP.tick(state.delayed);
+            const float raw = std::abs(state.delayed);
+            detection[static_cast<size_t>(ch)] = raw + filteredMix * (std::abs(filtered) - raw);
+        }
+        const float maxDetector = juce::jmax(detection[0], detection[1]);
         float maxGr = 0;
         for (int ch = 0; ch < n; ++ch)
         {
@@ -135,7 +148,7 @@ void FET67Processor::processEngine(juce::dsp::AudioBlock<float>& block, int n, i
             // More input headroom: keep odd-order iron distortion restrained under drive.
             constexpr float ironDrive = 0.06f;
             x = c.inputHP.tick(std::tanh(x * ironDrive) / ironDrive);
-            float detector = std::abs(c.delayed) + linked * (maxDetector - std::abs(c.delayed));
+            float detector = detection[static_cast<size_t>(ch)] + linked * (maxDetector - detection[static_cast<size_t>(ch)]);
             if (all) { c.lag = lagPole * c.lag + (1 - lagPole) * detector; detector = c.lag; }
             const float target = reduction(db(detector), thresholds[mode], knees[mode], ratios[mode]);
             const float fastPole = target > c.fast ? ac : rc;
@@ -182,6 +195,7 @@ void FET67Processor::process(juce::AudioBuffer<float>& b, juce::MidiBuffer& midi
     inputGain.setTargetValue(inputLevel(input->load()));
     outputGain.setTargetValue(gain((output->load() - 5) * 4.8f));
     linkMix.setTargetValue(link->load() > 0.5f ? 1.0f : 0.0f);
+    scFilterMix.setTargetValue(scFilter->load() > 0.5f ? 1.0f : 0.0f);
     const bool active = !hostBypassed && power->load() > 0.5f && bypass->load() < 0.5f;
     wet.setTargetValue(active ? 1.0f : 0.0f);
     matchMix.setTargetValue(fix->load() > 0.5f ? 1.0f : 0.0f);
@@ -285,6 +299,8 @@ void FET67Processor::setStateInformation(const void* data, int size)
             // including when loaded into an instance where FIX was enabled.
             if (!state.getChildWithProperty("id", "fix").isValid())
                 apvts.getParameter("fix")->setValueNotifyingHost(0.0f);
+            if (!state.getChildWithProperty("id", "scFilter").isValid())
+                apvts.getParameter("scFilter")->setValueNotifyingHost(0.0f);
             editorWidth.store(juce::jlimit(817, 4085, static_cast<int>(state.getProperty("editorWidth", 1634))));
             editorHeight.store(juce::jlimit(126, 630, static_cast<int>(state.getProperty("editorHeight", 252))));
             apvts.replaceState(state);

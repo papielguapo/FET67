@@ -122,9 +122,9 @@ FaceplateComponent::FaceplateComponent(FET67Processor& p):processor(p)
         };
         knobAttachments[i]=std::make_unique<SA>(processor.apvts,ids[i],s);
     }
-    const char* switchIds[]{"power","link","meterMode","fix"};
-    const char* tips[]{"Power: on / off (latency-aligned dry passthrough)","Link: stereo linked / dual mono","Meter: gain reduction / output (0 = -18 dBFS RMS)","FIX: RMS output matching to the original input, +/-24 dB; allow a few seconds to settle. Not LUFS or peak limiting."};
-    for(size_t i=0;i<switches.size();++i) {auto& b=switches[i];addAndMakeVisible(b);b.setName(switchIds[i]);b.setTitle(tips[i]);b.setTooltip(tips[i]);b.setClickingTogglesState(true);if(i<2)b.getProperties().set("reverse",true);switchAttachments[i]=std::make_unique<BA>(processor.apvts,switchIds[i],b);}
+    const char* switchIds[]{"power","scFilter","meterMode","fix"};
+    const char* tips[]{"Power: on / off (latency-aligned dry passthrough)","SC FILTER: 80 Hz high-pass in the detector only; does not cut bass from the audio path. New instances remain stereo-linked.","Meter: gain reduction / output (0 = -18 dBFS RMS)","FIX: RMS output matching to the original input, +/-24 dB; allow a few seconds to settle. Not LUFS or peak limiting."};
+    for(size_t i=0;i<switches.size();++i) {auto& b=switches[i];addAndMakeVisible(b);b.setName(switchIds[i]);b.setTitle(tips[i]);b.setTooltip(tips[i]);b.setClickingTogglesState(true);if(i==0)b.getProperties().set("reverse",true);switchAttachments[i]=std::make_unique<BA>(processor.apvts,switchIds[i],b);}
     startTimerHz(60);
 }
 FaceplateComponent::~FaceplateComponent() {stopTimer();setLookAndFeel(nullptr);}
@@ -233,13 +233,13 @@ void FaceplateComponent::paint(juce::Graphics& g)
     for(int i=0;i<3;++i)
     {
         const float cx=1064+130.0f*static_cast<float>(i);
-        const char* lhs[]{"ON","GR","OFF"};const char* rhs[]{"OFF","OUT","ON"};const char* title[]{"LINK","METER","FIX"};
+        const char* lhs[]{"OFF","GR","OFF"};const char* rhs[]{"ON","OUT","ON"};const char* title[]{"SC FILTER","METER","FIX"};
         g.setColour(colour(0xff1b2225));text(g,lhs[i],cx-44,145,30,15,10);text(g,rhs[i],cx+25,145,35,15,10);text(g,title[i],cx-36,171,82,18,11);
     }
-    const bool linked=processor.apvts.getRawParameterValue("link")->load()>0.5f;
-    if(linked){g.setColour(colour(0xffbc65ff).withAlpha(0.15f));g.fillEllipse(1007,147,10,10);}
+    const bool filtering=processor.apvts.getRawParameterValue("scFilter")->load()>0.5f;
+    if(filtering){g.setColour(colour(0xffbc65ff).withAlpha(0.15f));g.fillEllipse(1007,147,10,10);}
     g.setColour(colour(0xff784a96));g.drawEllipse(1009,149,5,6,0.7f);
-    g.setColour(colour(linked?0xffd49aff:0xff665470));g.fillEllipse(1010,150,3,4);
+    g.setColour(colour(filtering?0xffd49aff:0xff665470));g.fillEllipse(1010,150,3,4);
     // Hand-drawn vector script, independent of installed fonts.
     juce::Path signature;
     signature.startNewSubPath(0,22);signature.lineTo(12,2);signature.cubicTo(25,-3,25,7,13,12);signature.lineTo(7,12);

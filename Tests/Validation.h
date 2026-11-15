@@ -185,7 +185,7 @@ inline void silenceFloor()
 inline void fractionalSwitchState()
 {
     FET67Processor p;
-    for(const char* id:{"power","link","meterMode","bypass","fix"})
+    for(const char* id:{"power","link","meterMode","bypass","fix","scFilter"})
     {
         auto* param=p.apvts.getParameter(id);param->setValueNotifyingHost(0.550392f);
         require(std::abs(param->getValue()-0.550392f)<1e-6f,"Normalized automation representation changed");
@@ -195,11 +195,14 @@ inline void fractionalSwitchState()
     }
     auto legacy=p.apvts.copyState();
     legacy.removeChild(legacy.getChildWithProperty("id","fix"),nullptr);
+    legacy.removeChild(legacy.getChildWithProperty("id","scFilter"),nullptr);
     juce::MemoryBlock oldState;
     if(auto xml=legacy.createXml())juce::AudioProcessor::copyXmlToBinary(*xml,oldState);
     p.apvts.getParameter("fix")->setValueNotifyingHost(1);
+    p.apvts.getParameter("scFilter")->setValueNotifyingHost(1);
     p.setStateInformation(oldState.getData(),static_cast<int>(oldState.getSize()));
     require(p.apvts.getRawParameterValue("fix")->load()==0,"Legacy session unexpectedly enables FIX");
+    require(p.apvts.getRawParameterValue("scFilter")->load()==0,"Legacy session unexpectedly enables SC FILTER");
     std::cout<<"FRACTIONAL_SWITCH_STATE PASS\n";
 }
 
@@ -230,12 +233,37 @@ inline void levelMatch()
     std::cout<<"FIX matched_RMS="<<actual<<" input_RMS="<<expected<<" disabled_residual="<<difference<<" PASS\n";
 }
 
+inline void sidechainFilter()
+{
+    auto gainReduction=[](bool enabled,double frequency)
+    {
+        FET67Processor p;set(p,"attack",9);set(p,"scFilter",enabled?1.0f:0.0f);p.prepareToPlay(48000,128);
+        juce::AudioBuffer<float> b(2,128);juce::MidiBuffer midi;
+        for(int block=0;block<1125;++block){fillTone(b,block*128,frequency);p.processBlock(b,midi);}
+        return p.currentGrDb.load();
+    };
+    const float lowOff=gainReduction(false,40),lowOn=gainReduction(true,40);
+    const float midOff=gainReduction(false,1000),midOn=gainReduction(true,1000);
+    require(lowOff-lowOn>3,"SC FILTER does not reduce low-frequency triggering");
+    require(std::abs(midOff-midOn)<0.5f,"SC FILTER alters midrange detection excessively");
+    FET67Processor normal,filtered;set(filtered,"scFilter",1);
+    normal.prepareToPlay(48000,128);filtered.prepareToPlay(48000,128);
+    juce::AudioBuffer<float> a(2,128),b(2,128);juce::MidiBuffer midi;float error=0;
+    for(int block=0;block<100;++block)
+    {
+        fillTone(a,block*128,40,48000,0.001f);b.makeCopyOf(a);normal.processBlock(a,midi);filtered.processBlock(b,midi);
+        for(int i=0;i<128;++i)error=juce::jmax(error,std::abs(a.getSample(0,i)-b.getSample(0,i)));
+    }
+    require(error==0,"SC FILTER directly changes audio with compression inactive");
+    std::cout<<"SC_FILTER 40Hz_GR_off="<<lowOff<<" on="<<lowOn<<" 1kHz_GR_off="<<midOff<<" on="<<midOn<<" inactive_audio_error="<<error<<" PASS\n";
+}
+
 inline int run()
 {
     bypassAndMeter();latencyAndRobustness();
     require(aliasProbe(48000,10000)<-65,"48kHz alias rejection below release threshold");
     require(aliasProbe(44100,10000)<-65,"44.1kHz alias rejection below release threshold");
-    blockInvarianceAndPerformance();realtimeAllocation();silenceFloor();fractionalSwitchState();levelMatch();
+    blockInvarianceAndPerformance();realtimeAllocation();silenceFloor();fractionalSwitchState();levelMatch();sidechainFilter();
     FET67Processor colour;set(colour,"input",10);set(colour,"attack",9);spectrum(colour);
     std::cout<<"EXTENDED VALIDATION PASS\n";return 0;
 }

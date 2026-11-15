@@ -43,14 +43,14 @@ private:
     };
     struct Channel
     {
-        HighPass inputHP, fetHP;
+        HighPass inputHP, fetHP, detectorHP;
         float delayed = 0, fast = 0, slow = 0, lag = 0, gr = 0;
     };
     std::array<Channel, 2> channels;
-    std::atomic<float> *power, *input, *output, *attack, *release, *ratio, *link, *bypass, *fix;
+    std::atomic<float> *power, *input, *output, *attack, *release, *ratio, *link, *bypass, *fix, *scFilter;
     void process(juce::AudioBuffer<float>&, juce::MidiBuffer&, bool hostBypassed);
     void processEngine(juce::dsp::AudioBlock<float>&, int channelsToProcess, int mode);
-    juce::SmoothedValue<float> inputGain, outputGain, wet, attackPole, releasePole, slowReleasePole, linkMix;
+    juce::SmoothedValue<float> inputGain, outputGain, wet, attackPole, releasePole, slowReleasePole, linkMix, scFilterMix;
     juce::SmoothedValue<float> matchGain, matchMix;
     std::unique_ptr<juce::dsp::Oversampling<float>> oversampling;
     juce::AudioBuffer<float> engineBuffer, dryDelay;
