@@ -145,8 +145,8 @@ void FET67Processor::processEngine(juce::dsp::AudioBlock<float>& block, int n, i
         {
             auto& c = channels[static_cast<size_t>(ch)];
             float x = juce::jlimit(-64.0f, 64.0f, data[static_cast<size_t>(ch)][i] * inG);
-            // More input headroom: keep odd-order iron distortion restrained under drive.
-            constexpr float ironDrive = 0.06f;
+            // Clean voicing: more headroom before the feedback gain cell.
+            constexpr float ironDrive = 0.015f;
             x = c.inputHP.tick(std::tanh(x * ironDrive) / ironDrive);
             float detector = detection[static_cast<size_t>(ch)] + linked * (maxDetector - detection[static_cast<size_t>(ch)]);
             if (all) { c.lag = lagPole * c.lag + (1 - lagPole) * detector; detector = c.lag; }
@@ -159,13 +159,15 @@ void FET67Processor::processEngine(juce::dsp::AudioBlock<float>& block, int n, i
             c.gr = juce::jlimit(0.0f, 60.0f, juce::jmax(c.fast, c.slow));
             x *= gain(-c.gr); c.delayed = x;
             const float drive = juce::jmin(1.0f, c.gr / 24.0f);
-            // A moderate increase in bounded even-order colour, removed at DC below.
-            const float even = 0.10f * drive * x * x / (1 + x * x);
-            const float fet = x + even - 0.008f * drive * x * x * x / (1 + x * x);
+            // Retain a trace of bounded FET colour without the previous heavy H2.
+            const float even = 0.015f * drive * x * x / (1 + x * x);
+            const float fet = x + even - 0.001f * drive * x * x * x / (1 + x * x);
             x = c.fetHP.tick(fet) * outG;
-            constexpr float knee = 0.63095734f;
+            // Output safety saturation starts at 0 dBFS, rather than -4 dBFS.
+            // This is not a true-peak limiter; leave output headroom in the DAW.
+            constexpr float knee = 1.0f;
             if (std::abs(x) > knee)
-                x = std::copysign(knee + 0.35f * std::tanh((std::abs(x) - knee) / 0.35f), x);
+                x = std::copysign(knee + 0.25f * std::tanh((std::abs(x) - knee) / 0.25f), x);
             data[static_cast<size_t>(ch)][i] = x;
             maxGr = juce::jmax(maxGr, c.gr);
         }

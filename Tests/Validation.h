@@ -8,7 +8,7 @@ unsigned long endAllocationMonitoring() noexcept;
 
 namespace validation
 {
-inline void spectrum(juce::AudioProcessor& p)
+inline std::array<double,4> spectrum(juce::AudioProcessor& p)
 {
     p.setRateAndBufferSizeDetails(48000,128);p.prepareToPlay(48000,128);
     juce::AudioBuffer<float> b(2,128);juce::MidiBuffer midi;
@@ -24,8 +24,13 @@ inline void spectrum(juce::AudioProcessor& p)
         }
     }
     const double fundamental=std::hypot(real[0],imag[0]);
-    for(size_t h=0;h<4;++h)std::cout<<"SPECTRUM harmonic="<<h+1<<" dBc="<<20*std::log10(juce::jmax(1e-15,std::hypot(real[h],imag[h])/fundamental))<<"\n";
+    std::array<double,4> harmonics{};
+    for(size_t h=0;h<4;++h) {
+        harmonics[h]=20*std::log10(juce::jmax(1e-15,std::hypot(real[h],imag[h])/fundamental));
+        std::cout<<"SPECTRUM harmonic="<<h+1<<" dBc="<<harmonics[h]<<"\n";
+    }
     p.releaseResources();
+    return harmonics;
 }
 inline void fillTone(juce::AudioBuffer<float>& b, int offset, double frequency, double sampleRate=48000, float amplitude=0.5f)
 {
@@ -264,6 +269,11 @@ inline int run()
     require(aliasProbe(48000,10000)<-65,"48kHz alias rejection below release threshold");
     require(aliasProbe(44100,10000)<-65,"44.1kHz alias rejection below release threshold");
     blockInvarianceAndPerformance();realtimeAllocation();silenceFloor();fractionalSwitchState();levelMatch();sidechainFilter();
+    FET67Processor clean;set(clean,"input",5.8f);set(clean,"attack",3);
+    const auto cleanHarmonics=spectrum(clean);
+    require(cleanHarmonics[1]<-56,"Clean voicing has excessive H2 at reference drive");
+    require(cleanHarmonics[2]<-60,"Clean voicing has excessive H3 at reference drive");
+    std::cout<<"CLEAN_COLOUR reference_input=5.8 attack=3 PASS\n";
     FET67Processor colour;set(colour,"input",10);set(colour,"attack",9);spectrum(colour);
     std::cout<<"EXTENDED VALIDATION PASS\n";return 0;
 }
