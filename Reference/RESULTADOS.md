@@ -1,5 +1,7 @@
 # Referencia medida: Waves CLA-76 Bluey
 
+**Datos históricos de FET 67 1.1.** La versión 1.2 cambia el DSP y añade FIX/SC FILTER. Para reproducir estos números usa el código de 1.1; la herramienta actual se llama FET67Validation.exe.
+
 Fecha: 15 de noviembre de 2026. Referencia elegida por el usuario: **CLA-76 Bluey**, sustituyendo UADx Rev A. Se cargó el plugin instalado a través de su interfaz pública VST3; no se inspeccionó su código DSP ni se copiaron sus recursos.
 
 ## Método

@@ -1,0 +1,80 @@
+Start testing: Nov 15 18:00 Coordinated Universal Time
+----------------------------------------------------------
+1/3 Testing: DSP
+1/3 Test: DSP
+Command: "D:/a/FET67/FET67/build/FET67Tests_artefacts/Release/FET67Validation.exe"
+Directory: D:/a/FET67/FET67/build
+"DSP" start time: Nov 15 18:00 Coordinated Universal Time
+Output:
+----------------------------------------------------------
+Ratio 0 low -63.0237 high -16.9869 GR 12.0126
+Ratio 1 low -63.0237 high -17.6836 GR 12.7097
+Ratio 2 low -63.0237 high -16.9193 GR 11.946
+Ratio 3 low -63.0237 high -15.9387 GR 10.9661
+Ratio 4 low -63.0237 high -22.8468 GR 17.8852
+PASS: bypass, input mute, all ratios, finite output, stereo link / dual mono, state persistence, mono 44.1/96/192 kHz extreme drive
+<end of output>
+Test time =   3.23 sec
+----------------------------------------------------------
+Test Passed.
+"DSP" end time: Nov 15 18:01 Coordinated Universal Time
+"DSP" time elapsed: 00:00:03
+----------------------------------------------------------
+
+2/3 Testing: ExtendedValidation
+2/3 Test: ExtendedValidation
+Command: "D:/a/FET67/FET67/build/FET67Tests_artefacts/Release/FET67Validation.exe" "--validate"
+Directory: D:/a/FET67/FET67/build
+"ExtendedValidation" start time: Nov 15 18:01 Coordinated Universal Time
+Output:
+----------------------------------------------------------
+BYPASS first-block excess_dB=0.243158 after-fade residual=0 latency_samples=65
+METER measured_dB=-15.0514 expected_dB=-15.0515
+ROBUST sr=44100 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=48000 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=88200 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=96000 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=176400 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=192000 oversized=4097 prepared=16 latency=65 PASS
+ALIAS sr=48000 input_Hz=10000 folded_Hz=18000 dBc=-106.229
+ALIAS sr=44100 input_Hz=10000 folded_Hz=14100 dBc=-111.468
+BLOCK_INVARIANCE max_error=0
+PERFORMANCE block=32 single-core-average-percent=8.38141 worst_ms=0.2023 deadline_ms=0.666667
+PERFORMANCE block=64 single-core-average-percent=8.26119 worst_ms=0.2094 deadline_ms=1.33333
+PERFORMANCE block=128 single-core-average-percent=8.24962 worst_ms=0.3354 deadline_ms=2.66667
+PERFORMANCE block=512 single-core-average-percent=8.21419 worst_ms=0.9442 deadline_ms=10.6667
+REALTIME_CPP_NEW allocations=0 (native malloc is outside this monitor)
+SILENCE fresh_peak=0 tail_RMS_dBFS=-300 tail_peak=0 (numerical reporting floor -300 dBFS)
+FRACTIONAL_SWITCH_STATE PASS
+FIX matched_RMS=-23.0298 input_RMS=-23.0103 disabled_residual=0 PASS
+SC_FILTER 40Hz_GR_off=8.18484 on=3.14598 1kHz_GR_off=8.88863 on=8.86261 inactive_audio_error=0 PASS
+SPECTRUM harmonic=1 dBc=0
+SPECTRUM harmonic=2 dBc=-35.9642
+SPECTRUM harmonic=3 dBc=-24.1924
+SPECTRUM harmonic=4 dBc=-51.5633
+EXTENDED VALIDATION PASS
+<end of output>
+Test time =   6.75 sec
+----------------------------------------------------------
+Test Passed.
+"ExtendedValidation" end time: Nov 15 18:01 Coordinated Universal Time
+"ExtendedValidation" time elapsed: 00:00:06
+----------------------------------------------------------
+
+3/3 Testing: MissingPluginRejected
+3/3 Test: MissingPluginRejected
+Command: "D:/a/FET67/FET67/build/FET67Tests_artefacts/Release/FET67Validation.exe" "--scan" "D:/a/FET67/FET67/build/missing-plugin.vst3"
+Directory: D:/a/FET67/FET67/build
+"MissingPluginRejected" start time: Nov 15 18:01 Coordinated Universal Time
+Output:
+----------------------------------------------------------
+No VST3 plugins found at requested path
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"MissingPluginRejected" end time: Nov 15 18:01 Coordinated Universal Time
+"MissingPluginRejected" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 15 18:01 Coordinated Universal Time

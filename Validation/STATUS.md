@@ -19,7 +19,7 @@ Los bins de aliasing no representan toda la energía de aliasing. Los armónicos
 
 FIX iguala el RMS en el ensayo estacionario a unos 0,02 dB tras estabilizar; al desactivarlo, el residuo frente al procesador de control es 0. La prueba también verifica que no modifique el audio seco con POWER OFF.
 
-SC FILTER (80 Hz, solo detector) se añadió después del build independiente citado más abajo y requiere su nueva ejecución de CI. Su regresión local pasa: GR de 40 Hz OFF 8,18484 / ON 3,14598 dB; a 1 kHz OFF 8,88863 / ON 8,86261 dB. Error de audio ON/OFF con compresión inactiva: 0. Los estados anteriores a SC FILTER lo recuperan apagado. El parámetro LINK permanece para compatibilidad aunque ya no tiene control en el frontal.
+SC FILTER (80 Hz, solo detector) está incluido en el build independiente final citado más abajo. Su regresión pasa localmente y en CI: GR de 40 Hz OFF 8,18484 / ON 3,14598 dB; a 1 kHz OFF 8,88863 / ON 8,86261 dB. Error de audio ON/OFF con compresión inactiva: 0. Los estados anteriores a SC FILTER lo recuperan apagado. El parámetro LINK permanece para compatibilidad aunque ya no tiene control en el frontal.
 
 ## Suite automática
 
@@ -49,7 +49,7 @@ El proveedor restringe esas pistas a uso educativo. Audio y renders permanecen f
 
 ## Build independiente y procedencia del binario
 
-**SUCCESS:** [GitHub Actions 43741209722](https://github.com/papielguapo/FET67/actions/runs/43741209722), commit de código `f81e3bc3825a779eee120cf509cf039978d236f7`. Runner Windows 2022, generador Visual Studio 17 2022, Release x64, JUCE 9.0.5 descargado del archivo oficial.
+**SUCCESS:** [GitHub Actions 43743676421](https://github.com/papielguapo/FET67/actions/runs/43743676421), commit de código `22f96db3eff0d0de5e9f8e2240dc9ef57651f035`. Runner Windows 2022, generador Visual Studio 17 2022, Release x64, JUCE 9.0.5 descargado del archivo oficial.
 
 La compilación, las tres pruebas CTest y pluginval 1.0.4 nivel 10, dos repeticiones, finalizaron correctamente. Se descargó el artefacto de ese run y se utilizaron **sus binarios** para la instalación final y el ZIP. Los commits posteriores de documentación no cambian ese código.
 
@@ -57,6 +57,8 @@ Registros: `Windows2022-CI.log`, `Windows2022-CTest.log` y `Windows2022-pluginva
 
 SHA-256 del VST3 distribuido e instalado:
 
-`683CB6AE838FD83BD9866374053B87B0BEEB02C2529DA1723D59072DD551B8CD`
+`4B6F1500D88161FA896051F8B1F7051F2931BD9186551F4A3973B7BF51EDF6B4`
 
 El binario depende de los runtimes MSVCP140/VCRUNTIME140 y de componentes de Windows indicados en `Dependencies.txt`. No se ha certificado ejecución en todas las versiones de Windows. La firma Authenticode continúa pendiente.
+
+La instalación final en Program Files se verificó por SHA-256 y por instanciación del VST3. `Installed-Parameters.txt` confirma FIX y SC Filter 80 Hz, ambos apagados por defecto. La prueba dentro de FL Studio y la aprobación auditiva permanecen pendientes.
