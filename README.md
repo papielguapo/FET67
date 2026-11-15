@@ -73,6 +73,6 @@ CMake usa `C:/JUCE` si contiene JUCE 7/8/9; en su ausencia descarga JUCE 9.0.5 o
 
 El workflow Windows validation compila con Visual Studio 2022, ejecuta CTest y pluginval oficial 1.0.4 nivel 10, y conserva artefactos. Consulta [Validation/STATUS.md](Validation/STATUS.md) y sus logs para distinguir lo comprobado de lo pendiente. Los datos de `Reference/` son históricos de 1.1, no una calibración de 1.2.
 
-El [run independiente 43743676421](https://github.com/papielguapo/FET67/actions/runs/43743676421) terminó en SUCCESS. El ZIP usa sus binarios, que dependen del runtime de Microsoft Visual C++ x64 y de los componentes de Windows enumerados en `Validation/Dependencies.txt`.
+El [run independiente 43745547299](https://github.com/papielguapo/FET67/actions/runs/43745547299) terminó en SUCCESS. El ZIP usa sus binarios, que dependen del runtime de Microsoft Visual C++ x64 y de los componentes de Windows enumerados en `Validation/Dependencies.txt`.
 
 La aprobación auditiva, la prueba en FL Studio, otros hosts, el validador independiente de Steinberg y los requisitos de distribución deben registrarse por separado. No se declara validación comercial completa.

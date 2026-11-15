@@ -49,7 +49,7 @@ El proveedor restringe esas pistas a uso educativo. Audio y renders permanecen f
 
 ## Build independiente y procedencia del binario
 
-**SUCCESS:** [GitHub Actions 43743676421](https://github.com/papielguapo/FET67/actions/runs/43743676421), commit de código `22f96db3eff0d0de5e9f8e2240dc9ef57651f035`. Runner Windows 2022, generador Visual Studio 17 2022, Release x64, JUCE 9.0.5 descargado del archivo oficial.
+**SUCCESS:** [GitHub Actions 43745547299](https://github.com/papielguapo/FET67/actions/runs/43745547299), commit de código `c0aa3d35c5188c3bd63d7be385f508dfda6c9b47`. Runner Windows 2022, generador Visual Studio 17 2022, Release x64, JUCE 9.0.5 descargado del archivo oficial.
 
 La compilación, las tres pruebas CTest y pluginval 1.0.4 nivel 10, dos repeticiones, finalizaron correctamente. Se descargó el artefacto de ese run y se utilizaron **sus binarios** para la instalación final y el ZIP. Los commits posteriores de documentación no cambian ese código.
 
@@ -57,8 +57,10 @@ Registros: `Windows2022-CI.log`, `Windows2022-CTest.log` y `Windows2022-pluginva
 
 SHA-256 del VST3 distribuido e instalado:
 
-`4B6F1500D88161FA896051F8B1F7051F2931BD9186551F4A3973B7BF51EDF6B4`
+`9FFEC92D49C13253B2C60A2146F436E0B4BCF91CF34B1A14F82C33CC4EAD198F`
 
 El binario depende de los runtimes MSVCP140/VCRUNTIME140 y de componentes de Windows indicados en `Dependencies.txt`. No se ha certificado ejecución en todas las versiones de Windows. La firma Authenticode continúa pendiente.
 
 La instalación final en Program Files se verificó por SHA-256 y por instanciación del VST3. `Installed-Parameters.txt` confirma FIX y SC Filter 80 Hz, ambos apagados por defecto. La prueba dentro de FL Studio y la aprobación auditiva permanecen pendientes.
+
+SC FILTER: ON a la izquierda y OFF a la derecha; apagado por defecto. Orientación incluida en el binario instalado y distribuido.
