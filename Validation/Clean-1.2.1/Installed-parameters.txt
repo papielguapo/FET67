@@ -1,0 +1,23 @@
+PARAM 0 | Power | 1 | On
+  0 = Off
+  1 = On
+PARAM 1 | Input | 0.45 | 4.5000000
+PARAM 2 | Output | 0.5 | 5.0000000
+PARAM 3 | Attack (1 fast, 9 slow) | 0.25 | 3.0000000
+PARAM 4 | Release (1 fast, 9 slow) | 0.375 | 4.0000000
+PARAM 5 | Ratio | 0 | 0
+PARAM 6 | Stereo Link | 1 | On
+  0 = Off
+  1 = On
+PARAM 7 | Meter Output | 0 | Off
+  0 = Off
+  1 = On
+PARAM 8 | Bypass | 0 | Off
+  0 = Off
+  1 = On
+PARAM 9 | FIX Level Match | 0 | Off
+  0 = Off
+  1 = On
+PARAM 10 | SC Filter 80 Hz | 0 | Off
+  0 = Off
+  1 = On
