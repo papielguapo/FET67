@@ -48,7 +48,7 @@ En el ensayo de tono a 40 Hz, GR pasa de 8,18 a 3,15 dB; a 1 kHz pasa de 8,889 a
 
 ## FIX: comparar niveles
 
-**FIX está apagado por defecto.** Actívalo para aproximar el RMS de salida al RMS de la señal original de entrada, antes del mando INPUT. Usa un ajuste común para ambos canales, después del compresor, sin modificar su detector.
+**FIX está apagado por defecto: ON a la izquierda y OFF a la derecha.** Actívalo para aproximar el RMS de salida al RMS de la señal original de entrada, antes del mando INPUT. Usa un ajuste común para ambos canales, después del compresor, sin modificar su detector.
 
 La estimación RMS usa 750 ms y la ganancia se mueve suavemente durante aproximadamente 1 s; deja varios segundos para estabilizar. El margen está limitado a ±24 dB y el aprendizaje se mantiene durante el silencio. No puede recuperar una entrada silenciada ni garantiza igualdad de sonoridad LUFS o percepción. Tampoco limita picos: deja margen en tu DAW. Cuando POWER está en OFF o el DAW hace bypass, FIX no aplica ganancia a la ruta seca.
 
@@ -79,7 +79,7 @@ Se preparó un A/B educativo privado con la voz de Al James, Schoolboy Fascinati
 
 ## Instalar
 
-Descarga el [ZIP de 1.2.3 RC1](https://github.com/papielguapo/FET67/releases/tag/v1.2.3-rc1) y copia la carpeta completa `Binaries/FET 67.vst3` a `C:\Program Files\Common Files\VST3`. Puede requerir permisos de administrador. Cierra instancias cargadas antes de actualizar, reescanea plugins y busca **FET 67 / Papielguapo**. También se entrega Standalone. No se incluye instalador ni firma Authenticode.
+Descarga el [ZIP de 1.2.3 RC2](https://github.com/papielguapo/FET67/releases/tag/v1.2.3-rc2) y copia la carpeta completa `Binaries/FET 67.vst3` a `C:\Program Files\Common Files\VST3`. Puede requerir permisos de administrador. Cierra instancias cargadas antes de actualizar, reescanea plugins y busca **FET 67 / Papielguapo**. También se entrega Standalone. No se incluye instalador ni firma Authenticode.
 
 ## Compilar y validar
 
