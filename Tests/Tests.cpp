@@ -114,9 +114,13 @@ int main(int argc,char** argv)
         if(argc>2&&juce::String(argv[1])=="--render")
         {
             FET67Processor previewProcessor;
-            auto editor=std::unique_ptr<juce::AudioProcessorEditor>(previewProcessor.createEditor());editor->setSize(1710,234);
+            auto editor=std::unique_ptr<juce::AudioProcessorEditor>(previewProcessor.createEditor());
+            const int renderWidth=argc>3?juce::String(argv[3]).getIntValue():kBaseWidth;
+            editor->setSize(renderWidth,juce::roundToInt(static_cast<double>(renderWidth)*kBaseHeight/kBaseWidth));
             const auto image=editor->createComponentSnapshot(editor->getLocalBounds());
-            juce::FileOutputStream stream{juce::File(juce::String(argv[2]))};juce::PNGImageFormat png;require(png.writeImageToStream(image,stream),"Screenshot write failed");
+            juce::FileOutputStream stream{juce::File(juce::String(argv[2]))};
+            require(stream.openedOk(),"Cannot open screenshot output");stream.setPosition(0);stream.truncate();
+            juce::PNGImageFormat png;require(png.writeImageToStream(image,stream),"Screenshot write failed");
         }
         std::cout<<"PASS: bypass, input mute, all ratios, finite output, stereo link / dual mono, state persistence, mono 44.1/96/192 kHz extreme drive\n";
     }

@@ -2,7 +2,7 @@
 #include "PluginProcessor.h"
 #include <juce_gui_basics/juce_gui_basics.h>
 
-inline constexpr int kBaseWidth = 1140, kBaseHeight = 156;
+inline constexpr int kBaseWidth = 1634, kBaseHeight = 252;
 
 class FET67LookAndFeel final : public juce::LookAndFeel_V4
 {

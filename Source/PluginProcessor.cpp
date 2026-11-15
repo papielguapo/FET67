@@ -180,8 +180,8 @@ void FET67Processor::setStateInformation(const void* data, int size)
         if (xml->hasTagName(apvts.state.getType()))
         {
             auto state = juce::ValueTree::fromXml(*xml);
-            editorWidth.store(juce::jlimit(570, 2850, static_cast<int>(state.getProperty("editorWidth", 1140))));
-            editorHeight.store(juce::jlimit(78, 390, static_cast<int>(state.getProperty("editorHeight", 156))));
+            editorWidth.store(juce::jlimit(817, 4085, static_cast<int>(state.getProperty("editorWidth", 1634))));
+            editorHeight.store(juce::jlimit(126, 630, static_cast<int>(state.getProperty("editorHeight", 252))));
             apvts.replaceState(state);
         }
 }

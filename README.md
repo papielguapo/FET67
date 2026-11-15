@@ -1,8 +1,14 @@
 # FET 67 — Papielguapo
 
-![Interfaz del plugin FET 67: frontal de aluminio con controles ultravioleta y medidor LED](Preview.png)
+![Interfaz del plugin FET 67: frontal de aluminio con controles ultravioleta y medidor LED](Preview-v1.1.png)
 
 Compresor FET mono/estéreo, C++17, JUCE 9.0.5, VST3 y Standalone Windows x64. Código completo, gráficos vectoriales sin imágenes externas y ganancia de entrada/salida exclusivamente manual. Identificadores: fabricante `Papi`, plugin `Ft67`.
+
+## Frontal 1.1
+
+El frontal sigue la referencia visual proporcionada: panel con ranuras horizontales, tornillos negros, piloto violeta grande, cinco mandos esculpidos, palancas oscuras y medidor horizontal. Se reconstruye con vectores y conserva los controles y el medidor funcionales. La firma se dibuja como trazos vectoriales y la marca continúa siendo FET 67. La referencia original se conserva en `Reference/AppearanceTarget.png` para comparar; no se utiliza como imagen de fondo del plugin.
+
+La proporción del lienzo es ahora 1634 × 252, con límites 817 × 126 y 4085 × 630 (50–250 %). La escala del sistema y las posiciones actuales de los controles afectan a la captura; no se afirma identidad píxel a píxel.
 
 ## Probar los binarios
 
@@ -35,7 +41,7 @@ Los resultados se generan en `build/FET67_artefacts/Release/VST3` y `build/FET67
 - Transformador de entrada con curva tanh, HP de 18 Hz; asimetría FET dependiente de GR, compensación polinómica LN y bloqueo DC de 20 Hz. La salida tiene ganancia manual y limitación suave por encima de la rodilla de calibración +18 dBu.
 - Link comparte el máximo de los dos detectores. Apagado permite detección dual mono. Los estados se mantienen separados y el cambio de enlace se interpola.
 - Meter GR marca 0 hacia la izquierda; OUT utiliza RMS suavizado, con 0 = −18 dBFS RMS. El LED CLIP ocupa el siguiente escalón del rango de visualización (+6 respecto a esa referencia), no es un medidor de true peak. No existe una conversión única de RMS a pico para todas las señales: la referencia −12 dBFS pico supone 6 dB de crest factor.
-- El editor usa un lienzo lógico 1140 × 156 y transformación afín, con escala del 50 al 250 %. El tamaño se guarda en el estado del plugin. Doble clic en un knob restaura su valor; el popup muestra el valor, tiempos o ratio.
+- El editor usa un lienzo lógico 1634 × 252 y transformación afín, con escala del 50 al 250 %. El tamaño se guarda en el estado del plugin. Doble clic en un knob restaura su valor; el popup muestra el valor, tiempos o ratio.
 
 ## Pruebas y mediciones de referencia
 

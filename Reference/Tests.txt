@@ -1,7 +1,7 @@
 Test project C:/Users/anton/Documents/Codex/2026-11-15/files-pasted-by-the-user-role/work/build9
     Start 1: DSP
-1/1 Test #1: DSP ..............................   Passed    0.50 sec
+1/1 Test #1: DSP ..............................   Passed    0.46 sec
 
 100% tests passed out of 1
 
-Total Test time (real) =   0.58 sec
+Total Test time (real) =   0.48 sec
