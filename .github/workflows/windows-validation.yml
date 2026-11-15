@@ -1,0 +1,47 @@
+name: Windows validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  msvc-2022:
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure C++17, VST3, Standalone and tests
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DFET67_COPY_PLUGIN_AFTER_BUILD=OFF -DFET67_BUILD_TESTS=ON
+      - name: Build Release
+        run: cmake --build build --config Release --parallel 2
+      - name: Run regression tests
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Download official pluginval 1.0.4
+        shell: pwsh
+        run: |
+          Invoke-WebRequest https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_Windows.zip -OutFile pluginval.zip
+          Expand-Archive pluginval.zip pluginval
+      - name: Validate VST3 at strictness 10
+        shell: pwsh
+        run: |
+          $validator = (Get-ChildItem pluginval -Recurse -Filter pluginval.exe | Select-Object -First 1).FullName
+          New-Item -ItemType Directory -Force ci-validation | Out-Null
+          $target = Join-Path $PWD 'build/FET67_artefacts/Release/VST3/FET 67.vst3'
+          $validationArguments = @('--strictness-level','10','--random-seed','61543','--repeat','2','--randomise','--timeout-ms','60000','--output-dir',"$PWD/ci-validation",'--output-filename','pluginval.txt','--validate',('"' + $target + '"'))
+          $process = Start-Process $validator -ArgumentList $validationArguments -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "pluginval failed: $($process.ExitCode)" }
+          if (-not (Select-String -Path ci-validation/pluginval.txt -Pattern '^SUCCESS$')) { throw 'Missing pluginval SUCCESS result' }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: FET67-Windows-x64
+          path: |
+            build/FET67_artefacts/Release/VST3/
+            build/FET67_artefacts/Release/Standalone/
+            build/Testing/Temporary/LastTest.log
+            ci-validation/

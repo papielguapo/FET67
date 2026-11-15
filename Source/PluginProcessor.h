@@ -1,5 +1,6 @@
 #pragma once
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_dsp/juce_dsp.h>
 #include <array>
 #include <atomic>
 
@@ -20,7 +21,7 @@ public:
     bool acceptsMidi() const override { return false; }
     bool producesMidi() const override { return false; }
     bool isMidiEffect() const override { return false; }
-    double getTailLengthSeconds() const override { return 0.0; }
+    double getTailLengthSeconds() const override { return 0.5; }
     int getNumPrograms() override { return 1; }
     int getCurrentProgram() override { return 0; }
     void setCurrentProgram(int) override {}
@@ -31,6 +32,7 @@ public:
     static juce::AudioProcessorValueTreeState::ParameterLayout makeParameters();
     juce::AudioProcessorValueTreeState apvts;
     std::atomic<float> currentGrDb { 0.0f }, currentOutDb { -100.0f };
+    std::atomic<float> currentMatchGainDb { 0.0f };
     std::atomic<int> editorWidth { 1634 }, editorHeight { 252 };
 private:
     struct HighPass
@@ -45,10 +47,20 @@ private:
         float delayed = 0, fast = 0, slow = 0, lag = 0, gr = 0;
     };
     std::array<Channel, 2> channels;
-    std::atomic<float> *power, *input, *output, *attack, *release, *ratio, *link, *bypass;
-    juce::SmoothedValue<float> inputGain, outputGain, wet, attackTime, releaseTime, linkMix;
+    std::atomic<float> *power, *input, *output, *attack, *release, *ratio, *link, *bypass, *fix;
+    void process(juce::AudioBuffer<float>&, juce::MidiBuffer&, bool hostBypassed);
+    void processEngine(juce::dsp::AudioBlock<float>&, int channelsToProcess, int mode);
+    juce::SmoothedValue<float> inputGain, outputGain, wet, attackPole, releasePole, slowReleasePole, linkMix;
+    juce::SmoothedValue<float> matchGain, matchMix;
+    std::unique_ptr<juce::dsp::Oversampling<float>> oversampling;
+    juce::AudioBuffer<float> engineBuffer, dryDelay;
+    static constexpr int processingCapacity = 512;
+    int delayPosition = 0;
     double rate = 44100;
-    float rms = 0, grMeter = 0, meterRelease = 0, rmsPole = 0;
-    bool wasBypassed = false;
+    double engineRate = 352800;
+    std::array<double, 2> rms {};
+    double matchInputEnergy = 0, matchOutputEnergy = 0, matchEnergyPole = 0;
+    int matchCounter = 0;
+    float grMeter = 0, meterRelease = 0, rmsPole = 0, slowCharge = 0, lagPole = 0;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FET67Processor)
 };

@@ -122,8 +122,8 @@ FaceplateComponent::FaceplateComponent(FET67Processor& p):processor(p)
         };
         knobAttachments[i]=std::make_unique<SA>(processor.apvts,ids[i],s);
     }
-    const char* switchIds[]{"power","link","meterMode","bypass"};
-    const char* tips[]{"Power: on / off (dry passthrough)","Link: stereo linked / dual mono","Meter: gain reduction / output (0 = -18 dBFS RMS)","Bypass: compressor in / dry out"};
+    const char* switchIds[]{"power","link","meterMode","fix"};
+    const char* tips[]{"Power: on / off (latency-aligned dry passthrough)","Link: stereo linked / dual mono","Meter: gain reduction / output (0 = -18 dBFS RMS)","FIX: RMS output matching to the original input, +/-24 dB; allow a few seconds to settle. Not LUFS or peak limiting."};
     for(size_t i=0;i<switches.size();++i) {auto& b=switches[i];addAndMakeVisible(b);b.setName(switchIds[i]);b.setTitle(tips[i]);b.setTooltip(tips[i]);b.setClickingTogglesState(true);if(i<2)b.getProperties().set("reverse",true);switchAttachments[i]=std::make_unique<BA>(processor.apvts,switchIds[i],b);}
     startTimerHz(60);
 }
@@ -231,7 +231,7 @@ void FaceplateComponent::paint(juce::Graphics& g)
     for(int i=0;i<3;++i)
     {
         const float cx=1064+130.0f*static_cast<float>(i);
-        const char* lhs[]{"ON","GR","IN"};const char* rhs[]{"OFF","OUT","OUT"};const char* title[]{"LINK","METER","BYPASS"};
+        const char* lhs[]{"ON","GR","OFF"};const char* rhs[]{"OFF","OUT","ON"};const char* title[]{"LINK","METER","FIX"};
         g.setColour(colour(0xff1b2225));text(g,lhs[i],cx-44,145,30,15,10);text(g,rhs[i],cx+25,145,35,15,10);text(g,title[i],cx-36,171,82,18,11);
     }
     const bool linked=processor.apvts.getRawParameterValue("link")->load()>0.5f;

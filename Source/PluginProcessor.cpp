@@ -42,6 +42,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout FET67Processor::makeParamete
     addBool("link", "Stereo Link", true);
     addBool("meterMode", "Meter Output", false);
     addBool("bypass", "Bypass", false);
+    addBool("fix", "FIX Level Match", false);
     return p;
 }
 FET67Processor::FET67Processor()
@@ -52,6 +53,7 @@ FET67Processor::FET67Processor()
     output = apvts.getRawParameterValue("output"); attack = apvts.getRawParameterValue("attack");
     release = apvts.getRawParameterValue("release"); ratio = apvts.getRawParameterValue("ratio");
     link = apvts.getRawParameterValue("link"); bypass = apvts.getRawParameterValue("bypass");
+    fix = apvts.getRawParameterValue("fix");
 }
 bool FET67Processor::isBusesLayoutSupported(const BusesLayout& l) const
 {
@@ -60,67 +62,79 @@ bool FET67Processor::isBusesLayoutSupported(const BusesLayout& l) const
 }
 void FET67Processor::prepareToPlay(double sr, int)
 {
-    rate = juce::jmax(8000.0, sr);
+    rate = std::isfinite(sr) ? juce::jmax(8000.0, sr) : 44100.0;
+    oversampling = std::make_unique<juce::dsp::Oversampling<float>>(
+        2, 3, juce::dsp::Oversampling<float>::filterHalfBandFIREquiripple, true, true);
+    oversampling->initProcessing(processingCapacity);
+    engineRate = rate * static_cast<double>(oversampling->getOversamplingFactor());
+    setLatencySamples(juce::roundToInt(oversampling->getLatencyInSamples()));
+    engineBuffer.setSize(2, processingCapacity);
+    dryDelay.setSize(2, getLatencySamples() + 1);
     for (auto& c : channels)
     {
-        c.inputHP.pole = static_cast<float>(std::exp(-juce::MathConstants<double>::twoPi * 18.0 / rate));
-        c.fetHP.pole = static_cast<float>(std::exp(-juce::MathConstants<double>::twoPi * 20.0 / rate));
+        c.inputHP.pole = static_cast<float>(std::exp(-juce::MathConstants<double>::twoPi * 18.0 / engineRate));
+        c.fetHP.pole = static_cast<float>(std::exp(-juce::MathConstants<double>::twoPi * 20.0 / engineRate));
     }
-    for (auto* s : { &inputGain, &outputGain, &wet, &attackTime, &releaseTime, &linkMix }) s->reset(rate, 0.02);
-    meterRelease = static_cast<float>(std::exp(-1.0 / (rate * 0.25)));
+    for (auto* smooth : { &inputGain, &outputGain, &attackPole, &releasePole, &slowReleasePole, &linkMix })
+        smooth->reset(engineRate, 0.02);
+    wet.reset(rate, 0.02);
+    matchMix.reset(rate, 0.02); matchGain.reset(rate, 1.0);
+    matchEnergyPole = std::exp(-1.0 / (rate * 0.75));
+    meterRelease = static_cast<float>(std::exp(-1.0 / (engineRate * 0.25)));
     rmsPole = static_cast<float>(std::exp(-1.0 / (rate * 0.3)));
+    slowCharge = static_cast<float>(std::exp(-1.0 / (engineRate * 0.15)));
+    lagPole = static_cast<float>(std::exp(-1.0 / (engineRate * 0.00018)));
     reset();
 }
+
 void FET67Processor::reset()
 {
-    for (auto& c : channels) { c.inputHP.clear(); c.fetHP.clear(); c.delayed = c.fast = c.slow = c.lag = c.gr = 0; }
+    for (auto& c : channels)
+    {
+        c.inputHP.clear(); c.fetHP.clear();
+        c.delayed = c.fast = c.slow = c.lag = c.gr = 0;
+    }
+    if (oversampling != nullptr) oversampling->reset();
+    engineBuffer.clear(); dryDelay.clear(); delayPosition = 0;
     inputGain.setCurrentAndTargetValue(inputLevel(input->load()));
     outputGain.setCurrentAndTargetValue(gain((output->load() - 5) * 4.8f));
     wet.setCurrentAndTargetValue(power->load() > 0.5f && bypass->load() < 0.5f ? 1.0f : 0.0f);
-    attackTime.setCurrentAndTargetValue(attackSeconds(attack->load()));
-    releaseTime.setCurrentAndTargetValue(releaseSeconds(release->load()));
-    linkMix.setCurrentAndTargetValue(link->load());
-    rms = grMeter = 0; currentGrDb.store(0); currentOutDb.store(-100);
-    wasBypassed = false;
+    matchMix.setCurrentAndTargetValue(fix->load() > 0.5f ? 1.0f : 0.0f);
+    matchGain.setCurrentAndTargetValue(1.0f);
+    matchInputEnergy = matchOutputEnergy = 0; matchCounter = 0;
+    currentMatchGainDb.store(0);
+    const bool all = ratio->load() > 3.5f;
+    const double a = all ? 0.00045 : attackSeconds(attack->load());
+    const double r = releaseSeconds(release->load());
+    attackPole.setCurrentAndTargetValue(static_cast<float>(std::exp(-1.0 / (engineRate * a))));
+    releasePole.setCurrentAndTargetValue(static_cast<float>(std::exp(-1.0 / (engineRate * r))));
+    slowReleasePole.setCurrentAndTargetValue(static_cast<float>(std::exp(-1.0 / (engineRate * r * (all ? 5 : 3)))));
+    linkMix.setCurrentAndTargetValue(link->load() > 0.5f ? 1.0f : 0.0f);
+    rms.fill(0); grMeter = 0;
+    currentGrDb.store(0); currentOutDb.store(-100);
 }
-void FET67Processor::processBlock(juce::AudioBuffer<float>& b, juce::MidiBuffer& midi)
+
+void FET67Processor::processEngine(juce::dsp::AudioBlock<float>& block, int n, int mode)
 {
-    juce::ScopedNoDenormals guard;
-    midi.clear();
-    const int n = juce::jmin(2, juce::jmin(b.getNumChannels(), getTotalNumInputChannels()));
-    for (int ch = n; ch < b.getNumChannels(); ++ch) b.clear(ch, 0, b.getNumSamples());
-    if (n == 0) return;
-    if (wasBypassed) { reset(); wasBypassed = false; }
-    inputGain.setTargetValue(inputLevel(input->load()));
-    outputGain.setTargetValue(gain((output->load() - 5) * 4.8f));
-    attackTime.setTargetValue(attackSeconds(attack->load()));
-    releaseTime.setTargetValue(releaseSeconds(release->load()));
-    linkMix.setTargetValue(link->load() > 0.5f ? 1.0f : 0.0f);
-    wet.setTargetValue(power->load() > 0.5f && bypass->load() < 0.5f ? 1.0f : 0.0f);
-    const int mode = juce::jlimit(0, 4, juce::roundToInt(ratio->load()));
-    constexpr float ratios[] {4,8,12,20,24}, thresholds[] {-18,-16.5f,-15,-13.5f,-21.5f}, knees[] {4.5f,3.2f,2.4f,1.5f,7.5f};
+    constexpr float ratios[] {4,8,12,20,24};
+    constexpr float thresholds[] {-18,-16.5f,-15,-13.5f,-21.5f};
+    constexpr float knees[] {4.5f,3.2f,2.4f,1.5f,7.5f};
     const bool all = mode == 4;
-    const float slowCharge = static_cast<float>(std::exp(-1.0 / (rate * 0.15)));
-    const float lagPole = static_cast<float>(std::exp(-1.0 / (rate * 0.00018)));
-    auto* left = b.getWritePointer(0);
-    auto* right = n == 2 ? b.getWritePointer(1) : nullptr;
-    for (int i = 0; i < b.getNumSamples(); ++i)
+    std::array<float*, 2> data { block.getChannelPointer(0), block.getChannelPointer(1) };
+    for (size_t i = 0; i < block.getNumSamples(); ++i)
     {
-        const float inG = inputGain.getNextValue(), outG = outputGain.getNextValue(), mix = wet.getNextValue();
-        const float at = attackTime.getNextValue(), rt = releaseTime.getNextValue(), linked = linkMix.getNextValue();
-        const float ac = static_cast<float>(std::exp(-1.0 / (rate * (all ? 0.00045 : at))));
-        const float rc = static_cast<float>(std::exp(-1.0 / (rate * rt)));
-        const float src = static_cast<float>(std::exp(-1.0 / (rate * rt * (all ? 5.0 : 3.0))));
+        const float inG = inputGain.getNextValue(), outG = outputGain.getNextValue();
+        const float ac = attackPole.getNextValue(), rc = releasePole.getNextValue();
+        const float src = slowReleasePole.getNextValue(), linked = linkMix.getNextValue();
         const float maxDetector = juce::jmax(std::abs(channels[0].delayed), n == 2 ? std::abs(channels[1].delayed) : 0.0f);
-        float energy = 0, maxGr = 0;
+        float maxGr = 0;
         for (int ch = 0; ch < n; ++ch)
         {
             auto& c = channels[static_cast<size_t>(ch)];
-            float& sample = ch == 0 ? left[i] : right[i];
-            const float dry = std::isfinite(sample) ? sample : 0;
-            float x = juce::jlimit(-64.0f, 64.0f, dry * inG);
-            // Low-level unity slope; increasing iron curvature with manual input drive.
-            x = c.inputHP.tick(std::tanh(x * 0.16f) / 0.16f);
+            float x = juce::jlimit(-64.0f, 64.0f, data[static_cast<size_t>(ch)][i] * inG);
+            // More input headroom: keep odd-order iron distortion restrained under drive.
+            constexpr float ironDrive = 0.06f;
+            x = c.inputHP.tick(std::tanh(x * ironDrive) / ironDrive);
             float detector = std::abs(c.delayed) + linked * (maxDetector - std::abs(c.delayed));
             if (all) { c.lag = lagPole * c.lag + (1 - lagPole) * detector; detector = c.lag; }
             const float target = reduction(db(detector), thresholds[mode], knees[mode], ratios[mode]);
@@ -130,46 +144,131 @@ void FET67Processor::processBlock(juce::AudioBuffer<float>& b, juce::MidiBuffer&
             const float sp = slowTarget > c.slow ? slowCharge : src;
             c.slow = sp * c.slow + (1 - sp) * slowTarget;
             c.gr = juce::jlimit(0.0f, 60.0f, juce::jmax(c.fast, c.slow));
-            x *= gain(-c.gr);
-            c.delayed = x;
-            // Rev A asymmetry, with bounded LN compensation of higher-order curvature.
+            x *= gain(-c.gr); c.delayed = x;
             const float drive = juce::jmin(1.0f, c.gr / 24.0f);
-            const float even = 0.055f * drive * x * x / (1 + x * x);
+            // A moderate increase in bounded even-order colour, removed at DC below.
+            const float even = 0.10f * drive * x * x / (1 + x * x);
             const float fet = x + even - 0.008f * drive * x * x * x / (1 + x * x);
             x = c.fetHP.tick(fet) * outG;
-            // -18 dBFS RMS = 0 VU; +18 dBu aligns with a -4 dBFS peak knee
-            // when 0 VU is +4 dBu. The requested -12 peak mark is a separate display reference.
             constexpr float knee = 0.63095734f;
-            const float a = std::abs(x);
-            if (a > knee) x = std::copysign(knee + 0.35f * std::tanh((a - knee) / 0.35f), x);
-            sample = mix <= 0 ? dry : dry + mix * (x - dry);
-            energy = juce::jmax(energy, sample * sample);
-            maxGr = juce::jmax(maxGr, c.gr * mix);
+            if (std::abs(x) > knee)
+                x = std::copysign(knee + 0.35f * std::tanh((std::abs(x) - knee) / 0.35f), x);
+            data[static_cast<size_t>(ch)][i] = x;
+            maxGr = juce::jmax(maxGr, c.gr);
         }
-        rms = rmsPole * rms + (1 - rmsPole) * energy;
         grMeter = juce::jmax(maxGr, grMeter * meterRelease);
     }
-    currentGrDb.store(grMeter, std::memory_order_relaxed);
-    currentOutDb.store(juce::jmax(-100.0f, 10.0f * std::log10(juce::jmax(1.0e-10f, rms))), std::memory_order_relaxed);
 }
-void FET67Processor::processBlockBypassed(juce::AudioBuffer<float>& b, juce::MidiBuffer& m)
+
+void FET67Processor::processBlock(juce::AudioBuffer<float>& b, juce::MidiBuffer& midi)
 {
-    m.clear();
-    wasBypassed = true;
-    const int n = juce::jmin(b.getNumChannels(), getTotalNumInputChannels());
-    for (int c = n; c < b.getNumChannels(); ++c) b.clear(c, 0, b.getNumSamples());
-    for (int i = 0; i < b.getNumSamples(); ++i)
+    process(b, midi, false);
+}
+
+void FET67Processor::processBlockBypassed(juce::AudioBuffer<float>& b, juce::MidiBuffer& midi)
+{
+    // Keep the same engine and delay histories running in both callbacks.
+    // Host bypass and the panel switch share the same latency-aligned fade.
+    process(b, midi, true);
+}
+
+void FET67Processor::process(juce::AudioBuffer<float>& b, juce::MidiBuffer& midi, bool hostBypassed)
+{
+    juce::ScopedNoDenormals guard;
+    midi.clear();
+    const int n = juce::jmin(2, juce::jmin(b.getNumChannels(), getTotalNumInputChannels()));
+    for (int ch = n; ch < b.getNumChannels(); ++ch) b.clear(ch, 0, b.getNumSamples());
+    if (n == 0 || oversampling == nullptr) return;
+    inputGain.setTargetValue(inputLevel(input->load()));
+    outputGain.setTargetValue(gain((output->load() - 5) * 4.8f));
+    linkMix.setTargetValue(link->load() > 0.5f ? 1.0f : 0.0f);
+    const bool active = !hostBypassed && power->load() > 0.5f && bypass->load() < 0.5f;
+    wet.setTargetValue(active ? 1.0f : 0.0f);
+    matchMix.setTargetValue(fix->load() > 0.5f ? 1.0f : 0.0f);
+    const int mode = juce::jlimit(0, 4, juce::roundToInt(ratio->load()));
+    const bool all = mode == 4;
+    const double at = all ? 0.00045 : attackSeconds(attack->load());
+    const double rt = releaseSeconds(release->load());
+    attackPole.setTargetValue(static_cast<float>(std::exp(-1.0 / (engineRate * at))));
+    releasePole.setTargetValue(static_cast<float>(std::exp(-1.0 / (engineRate * rt))));
+    slowReleasePole.setTargetValue(static_cast<float>(std::exp(-1.0 / (engineRate * rt * (all ? 5 : 3)))));
+    const int delayLength = dryDelay.getNumSamples();
+    for (int offset = 0; offset < b.getNumSamples(); offset += processingCapacity)
     {
-        float e = 0;
-        for (int c = 0; c < n; ++c) { const float x = b.getSample(c,i); e = juce::jmax(e,x*x); }
-        rms = rmsPole*rms + (1-rmsPole)*e;
+        const int count = juce::jmin(processingCapacity, b.getNumSamples() - offset);
+        for (int ch = 0; ch < 2; ++ch)
+        {
+            auto* dest = engineBuffer.getWritePointer(ch);
+            if (ch >= n) { juce::FloatVectorOperations::clear(dest, count); continue; }
+            const auto* source = b.getReadPointer(ch, offset);
+            for (int i = 0; i < count; ++i)
+                dest[i] = std::isfinite(source[i]) ? juce::jlimit(-64.0f, 64.0f, source[i]) : 0.0f;
+        }
+        auto baseBlock = juce::dsp::AudioBlock<float>(engineBuffer).getSubBlock(0, static_cast<size_t>(count));
+        auto upBlock = oversampling->processSamplesUp(juce::dsp::AudioBlock<const float>(baseBlock));
+        processEngine(upBlock, n, mode);
+        oversampling->processSamplesDown(baseBlock);
+        for (int i = 0; i < count; ++i)
+        {
+            const float mix = wet.getNextValue();
+            const float matching = matchMix.getNextValue();
+            const float gainMatch = 1.0f + matching * (matchGain.getNextValue() - 1.0f);
+            double inputEnergy = 0, outputEnergy = 0;
+            const int readPosition = (delayPosition + 1) % delayLength;
+            for (int ch = 0; ch < n; ++ch)
+            {
+                auto* target = b.getWritePointer(ch, offset);
+                const float dry = std::isfinite(target[i]) ? target[i] : 0.0f;
+                dryDelay.setSample(ch, delayPosition, dry);
+                const float delayedDry = dryDelay.getSample(ch, readPosition);
+                const float processed = engineBuffer.getSample(ch, i);
+                inputEnergy += static_cast<double>(delayedDry) * delayedDry;
+                outputEnergy += static_cast<double>(processed) * processed;
+                const float matched = processed * gainMatch;
+                target[i] = mix <= 0 ? delayedDry : mix >= 1 ? matched : delayedDry + mix * (matched - delayedDry);
+                auto& channelRms = rms[static_cast<size_t>(ch)];
+                const double level = target[i];
+                channelRms = rmsPole * channelRms + (1 - rmsPole) * level * level;
+            }
+            matchInputEnergy = matchEnergyPole * matchInputEnergy + (1 - matchEnergyPole) * (inputEnergy / n);
+            matchOutputEnergy = matchEnergyPole * matchOutputEnergy + (1 - matchEnergyPole) * (outputEnergy / n);
+            if (++matchCounter >= 64)
+            {
+                matchCounter = 0;
+                // Learn before compensation; use one gain for both channels. Hold
+                // through silence and clamp to +/-24 dB to avoid runaway boosts.
+                if (matchInputEnergy > 1.0e-6 && matchOutputEnergy > 1.0e-8)
+                {
+                    const double desiredDb = juce::jlimit(-24.0, 24.0, 10.0 * std::log10(matchInputEnergy / matchOutputEnergy));
+                    matchGain.setTargetValue(gain(static_cast<float>(desiredDb)));
+                }
+            }
+            delayPosition = readPosition;
+        }
     }
-    currentGrDb.store(0); currentOutDb.store(10*std::log10(juce::jmax(1.0e-10f,rms)));
+    currentGrDb.store(grMeter * wet.getCurrentValue(), std::memory_order_relaxed);
+    currentMatchGainDb.store(db(1.0f + matchMix.getCurrentValue() * (matchGain.getCurrentValue() - 1.0f)) * wet.getCurrentValue(), std::memory_order_relaxed);
+    const double maxRms = n == 1 ? rms[0] : juce::jmax(rms[0], rms[1]);
+    currentOutDb.store(static_cast<float>(juce::jmax(-100.0, 10.0 * std::log10(juce::jmax(1.0e-10, maxRms)))), std::memory_order_relaxed);
 }
 juce::AudioProcessorParameter* FET67Processor::getBypassParameter() const { return apvts.getParameter("bypass"); }
 void FET67Processor::getStateInformation(juce::MemoryBlock& dest)
 {
     auto state = apvts.copyState();
+    // APVTS snaps boolean values, while a VST3 controller may retain fractional
+    // normalized automation. Preserve that host representation as well.
+    if (auto oldValues = state.getChildWithName("HOST_NORMALIZED"); oldValues.isValid())
+        state.removeChild(oldValues, nullptr);
+    juce::ValueTree normalized("HOST_NORMALIZED");
+    for (auto* parameter : getParameters())
+        if (auto* ranged = dynamic_cast<juce::RangedAudioParameter*>(parameter))
+        {
+            juce::ValueTree value("VALUE");
+            value.setProperty("id", ranged->getParameterID(), nullptr);
+            value.setProperty("value", ranged->getValue(), nullptr);
+            normalized.addChild(value, -1, nullptr);
+        }
+    state.addChild(normalized, -1, nullptr);
     state.setProperty("editorWidth", editorWidth.load(), nullptr);
     state.setProperty("editorHeight", editorHeight.load(), nullptr);
     if (auto xml = state.createXml()) copyXmlToBinary(*xml, dest);
@@ -180,9 +279,24 @@ void FET67Processor::setStateInformation(const void* data, int size)
         if (xml->hasTagName(apvts.state.getType()))
         {
             auto state = juce::ValueTree::fromXml(*xml);
+            const auto normalized = state.getChildWithName("HOST_NORMALIZED");
+            if (normalized.isValid()) state.removeChild(normalized, nullptr);
+            // Sessions predating FIX must reopen with manual gain staging,
+            // including when loaded into an instance where FIX was enabled.
+            if (!state.getChildWithProperty("id", "fix").isValid())
+                apvts.getParameter("fix")->setValueNotifyingHost(0.0f);
             editorWidth.store(juce::jlimit(817, 4085, static_cast<int>(state.getProperty("editorWidth", 1634))));
             editorHeight.store(juce::jlimit(126, 630, static_cast<int>(state.getProperty("editorHeight", 252))));
             apvts.replaceState(state);
+            for (int i = 0; i < normalized.getNumChildren(); ++i)
+            {
+                const auto value = normalized.getChild(i);
+                if (auto* parameter = apvts.getParameter(value.getProperty("id").toString()))
+                {
+                    const float v = static_cast<float>(value.getProperty("value", parameter->getDefaultValue()));
+                    if (std::isfinite(v)) parameter->setValueNotifyingHost(juce::jlimit(0.0f, 1.0f, v));
+                }
+            }
         }
 }
 juce::AudioProcessorEditor* FET67Processor::createEditor() { return new FET67Editor(*this); }

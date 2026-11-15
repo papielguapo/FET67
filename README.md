@@ -1,64 +1,70 @@
 # FET 67 — papielguapo
 
-**Fabricante: papielguapo**
+**Fabricante: papielguapo · 1.2.0 · Windows x64**
 
-![Interfaz del plugin FET 67: frontal de aluminio con controles ultravioleta y medidor LED](Preview-v1.1.png)
+![FET 67 con POWER a la izquierda y FIX bajo el medidor](Preview-v1.2.png)
 
-Compresor FET mono/estéreo, C++17, JUCE 9.0.5, VST3 y Standalone Windows x64. Código completo, gráficos vectoriales sin imágenes externas y ganancia de entrada/salida exclusivamente manual. Identificadores: fabricante `Papi`, plugin `Ft67`.
+Compresor FET mono/estéreo, C++17/JUCE 9.0.5, VST3 y Standalone. Detector de realimentación, recuperación dependiente del programa y coloración asimétrica. Es un modelo original comparado con CLA-76 Bluey; no se ha demostrado equivalencia 1:1 ni preferencia en escucha ciega.
 
-## Frontal 1.1
+## Novedades de 1.2
 
-El frontal sigue la referencia visual proporcionada: panel con ranuras horizontales, tornillos negros, piloto violeta grande, cinco mandos esculpidos, palancas oscuras y medidor horizontal. Se reconstruye con vectores y conserva los controles y el medidor funcionales. La firma se dibuja como trazos vectoriales y la marca continúa siendo FET 67. La referencia original se conserva en `Reference/AppearanceTarget.png` para comparar; no se utiliza como imagen de fondo del plugin.
+- Sobremuestreo FIR **8×**, con filtros y tiempos recalculados a la frecuencia interna.
+- **65 samples de latencia** declarados al host y compensados también en la ruta seca: unos 1,35 ms a 48 kHz.
+- Más margen en la saturación de entrada y mayor armónico par. En el ensayo de 1 kHz con Input 10 y Attack 9, H2 pasa de −45,45 a −35,96 dBc y H3 de −13,59 a −24,19 dBc frente a 1.1. Son resultados de esa condición concreta.
+- Detector y filtros continuos durante bypass; desaparece el reinicio que provocaba el pico al volver a activar.
+- RMS independiente por canal, seguido de selección del mayor.
+- Estado compatible con automatización fraccionaria de interruptores y con proyectos anteriores.
+- Procesamiento por fragmentos de capacidad fija, preparado fuera del callback.
 
-La proporción del lienzo es ahora 1634 × 252, con límites 817 × 126 y 4085 × 630 (50–250 %). La escala del sistema y las posiciones actuales de los controles afectan a la captura; no se afirma identidad píxel a píxel.
+El DSP cambia el sonido de sesiones anteriores. Se mantienen fabricante `Papi`, código `Ft67` y los IDs antiguos. El parámetro `bypass` continúa para el DAW y para proyectos antiguos; su botón se ha sustituido por **FIX**. POWER permanece junto al piloto violeta.
 
-## Probar los binarios
+## FIX: comparar niveles
 
-En GitHub, descarga `FET67-Complete.zip` de la release para obtener la carpeta `Binaries`; los ejecutables no se guardan en el historial de código.
+**FIX está apagado por defecto.** Actívalo para aproximar el RMS de salida al RMS de la señal original de entrada, antes del mando INPUT. Usa un ajuste común para ambos canales, después del compresor, sin modificar su detector.
 
-`Binaries/FET 67.exe` es la aplicación Standalone. Selecciona el dispositivo de audio y sus entradas en sus ajustes. Evita realimentar físicamente la salida hacia la entrada.
+La estimación RMS usa 750 ms y la ganancia se mueve suavemente durante aproximadamente 1 s; deja varios segundos para estabilizar. El margen está limitado a ±24 dB y el aprendizaje se mantiene durante el silencio. No puede recuperar una entrada silenciada ni garantiza igualdad de sonoridad LUFS o percepción. Tampoco limita picos: deja margen en tu DAW. Cuando POWER está en OFF o el DAW hace bypass, FIX no aplica ganancia a la ruta seca.
 
-Copia la carpeta completa `Binaries/FET 67.vst3` a la carpeta VST3 que escanee tu DAW. La ubicación habitual de Windows es `C:\Program Files\Common Files\VST3`, que puede requerir permisos de escritura. No copies solamente el archivo interno. Se entrega sin instalador ni firma digital. El proyecto no instala ni sustituye automáticamente ningún plugin durante estas pruebas.
+Con FIX apagado, INPUT y OUTPUT son completamente manuales y no hay autogain. Los cambios de activación tienen fundidos de 20 ms.
 
-## Compilar con Visual Studio 2022
+## Controles
 
-Requisitos: CMake 3.22+, Git no es necesario para descargar el archivo de JUCE, Visual Studio con Desarrollo para el escritorio con C++ y Windows SDK. Desde esta carpeta:
+| Control | Rango y uso |
+|---|---|
+| INPUT | 0 = OFF; 0,1–10 equivale a −24…+30 dB |
+| OUTPUT | −24…+24 dB; posición 5 = 0 dB |
+| ATTACK | 1 = 20 µs, 9 = 800 µs: **1 rápido, 9 lento** |
+| RELEASE | 1 = 50 ms, 9 = 1100 ms; recuperación dependiente del programa |
+| RATIO | 4:1, 8:1, 12:1, 20:1 y ALL nominal 24:1 |
+| ALL | Ataque de 450 µs, lag del detector y recuperación modificada |
+| LINK | ON comparte detección; OFF permite dual mono |
+| METER | GR o RMS OUT; 0 OUT = −18 dBFS RMS |
+
+Los tiempos son constantes del modelo, no tiempos efectivos certificados frente al hardware. CLIP es un escalón de la escala y no un medidor de true peak. La saturación suave no es un limitador brickwall. El bypass asentado conserva los samples secos exactamente, desplazados los 65 samples declarados.
+
+La interfaz es vectorial: 1634×252, escala 50–250 %, tamaño guardado. Doble clic en un knob restaura el valor inicial.
+
+## Punto de partida para voz
+
+Ratio 4:1, Attack 7–9, Release 4, Output 5. Sube Input hasta obtener aproximadamente 3–6 dB de GR en las partes fuertes. Compara con FIX o iguala OUTPUT manualmente. Baja Attack hacia 1 para sujetar más los picos; súbelo hacia 9 para preservar más el inicio de palabras. La numeración no se traslada directamente desde Waves.
+
+Se preparó un A/B educativo privado con la voz de Al James, Schoolboy Fascination, de Cambridge-MT. Los renders y las pistas no se distribuyen en este repositorio. Su uso no constituye autorización para una demo comercial ni una aprobación auditiva.
+
+## Instalar
+
+Descarga el ZIP de la release y copia la carpeta completa `Binaries/FET 67.vst3` a `C:\Program Files\Common Files\VST3`. Puede requerir permisos de administrador. Cierra instancias cargadas antes de actualizar, reescanea plugins y busca **FET 67 / Papielguapo**. También se entrega Standalone. No se incluye instalador ni firma Authenticode.
+
+## Compilar y validar
+
+Visual Studio 2022 con C++ de escritorio, Windows SDK y CMake 3.22+:
 
 ```powershell
-cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DFET67_COPY_PLUGIN_AFTER_BUILD=OFF
-cmake --build build --config Release --parallel 4
-```
-
-También funciona con el generador `Visual Studio 18 2026`, usado para los binarios entregados. CMake utiliza `C:/JUCE` si contiene JUCE 7, 8 o 9; en caso contrario descarga JUCE 9.0.5 desde el repositorio oficial. Para otra copia local, añade `-DFET67_JUCE_PATH="D:/SDK/JUCE"`. La selección por defecto de JUCE 9 responde a la petición posterior de utilizar la versión actual.
-
-Los resultados se generan en `build/FET67_artefacts/Release/VST3` y `build/FET67_artefacts/Release/Standalone`. `FET67_COPY_PLUGIN_AFTER_BUILD` está activado por defecto como se pidió; el ejemplo lo desactiva para permitir compilar sin escribir en Program Files.
-
-## Controles y DSP
-
-- Power apagado y Bypass dejan pasar la señal seca. Los cambios internos tienen una transición de 20 ms para evitar clics; una vez terminada, la salida seca es exacta. El bypass del host también está soportado.
-- Input 0 silencia la ruta procesada. De 0 a 0,1 se interpola hasta −24 dB; de 0,1 a 10 se llega a +30 dB. Output 0–10 representa −24 a +24 dB, con 5 = 0 dB. No hay compensación automática de ganancia.
-- Attack 1–9 corresponde a 20–800 µs; Release 1–9 a 50–1100 ms. **1 es rápido y 9 lento**, según la especificación original. La numeración y sentido no deben trasladarse directamente desde Waves.
-- Ratios 4, 8, 12, 20 y ALL tienen los umbrales y knees solicitados. ALL usa ataque de 450 µs, retardo del detector y una rama de recuperación más larga.
-- El detector utiliza la señal post-FET del sample anterior. La ley de control usa R−1 para obtener la pendiente R:1 en una realimentación ideal; el comportamiento dinámico y las no linealidades alteran la pendiente medida.
-- Transformador de entrada con curva tanh, HP de 18 Hz; asimetría FET dependiente de GR, compensación polinómica LN y bloqueo DC de 20 Hz. La salida tiene ganancia manual y limitación suave por encima de la rodilla de calibración +18 dBu.
-- Link comparte el máximo de los dos detectores. Apagado permite detección dual mono. Los estados se mantienen separados y el cambio de enlace se interpola.
-- Meter GR marca 0 hacia la izquierda; OUT utiliza RMS suavizado, con 0 = −18 dBFS RMS. El LED CLIP ocupa el siguiente escalón del rango de visualización (+6 respecto a esa referencia), no es un medidor de true peak. No existe una conversión única de RMS a pico para todas las señales: la referencia −12 dBFS pico supone 6 dB de crest factor.
-- El editor usa un lienzo lógico 1634 × 252 y transformación afín, con escala del 50 al 250 %. El tamaño se guarda en el estado del plugin. Doble clic en un knob restaura su valor; el popup muestra el valor, tiempos o ratio.
-
-## Pruebas y mediciones de referencia
-
-```powershell
-cmake -S . -B build -DFET67_BUILD_TESTS=ON -DFET67_COPY_PLUGIN_AFTER_BUILD=OFF
-cmake --build build --config Release --parallel 4
+cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DFET67_COPY_PLUGIN_AFTER_BUILD=OFF -DFET67_BUILD_TESTS=ON
+cmake --build build --config Release --parallel 2
 ctest --test-dir build -C Release --output-on-failure
 ```
 
-`Tests/Tests.cpp` contiene pruebas offline reales y un host VST3. `Reference/RESULTADOS.md` describe las mediciones realizadas sobre el CLA-76 Stereo V14 instalado, seleccionado en Bluey, Analog Off. Los archivos `.txt` conservan los resultados originales, parámetros públicos y las trazas de transitorios de 1 ms. No se distribuye software, presets ni recursos gráficos de Waves.
+CMake usa `C:/JUCE` si contiene JUCE 7/8/9; en su ausencia descarga JUCE 9.0.5 oficial. Otra copia local: `-DFET67_JUCE_PATH="D:/SDK/JUCE"`. Los binarios están en `build/FET67_artefacts/Release`; las pruebas en `build/FET67Tests_artefacts/Release/FET67Validation.exe`. La copia automática está activada por defecto; el ejemplo la desactiva para no escribir en Program Files durante el build.
 
-## Estado de validación
+El workflow Windows validation compila con Visual Studio 2022, ejecuta CTest y pluginval oficial 1.0.4 nivel 10, y conserva artefactos. Consulta [Validation/STATUS.md](Validation/STATUS.md) y sus logs para distinguir lo comprobado de lo pendiente. Los datos de `Reference/` son históricos de 1.1, no una calibración de 1.2.
 
-Se han construido VST3 y Standalone con MSVC 19.51 / Visual Studio 2026 y JUCE 9.0.5, y se ha renderizado la GUI. También se construyeron ambos formatos con JUCE 8.0.6. Las comprobaciones offline cubren bypass, silencio de entrada, ratios, enlace/dual mono, persistencia y mono a varias frecuencias de muestreo. No se ha ejecutado la matriz de compatibilidad de DAWs, pluginval ni una sesión de escucha de material musical. Visual Studio 2022 y JUCE 7 conservan el código compatible pero no se han probado en esta máquina.
-
-Este es un modelo original funcional, con mediciones de referencia, no una reproducción certificada 1:1 del circuito ni un clon de Waves. No utiliza sobremuestreo: la distorsión puede producir aliasing con señales intensas de alta frecuencia. Para una publicación comercial quedan validación en hosts, evaluación auditiva, pruebas de aliasing/rendimiento y cumplimiento de la licencia de JUCE que corresponda al distribuidor. Ninguna afirmación de equivalencia sonora o certificación comercial está implícita.
-
-Fuentes técnicas: [JUCE CMake oficial](https://github.com/juce-framework/JUCE/blob/master/docs/CMake%20API.md), [manual oficial Waves CLA-76](https://assets.wavescdn.com/pdf/plugins/cla-76-compressor-limiter.pdf).
+La aprobación auditiva, la prueba en FL Studio, otros hosts, el validador independiente de Steinberg y los requisitos de distribución deben registrarse por separado. No se declara validación comercial completa.

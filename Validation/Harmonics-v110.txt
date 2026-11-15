@@ -1,0 +1,39 @@
+PARAM 0 | Power | 1 | On
+  0 = Off
+  1 = On
+PARAM 1 | Input | 0.45 | 4.5000000
+PARAM 2 | Output | 0.5 | 5.0000000
+PARAM 3 | Attack (1 fast, 9 slow) | 0.25 | 3.0000000
+PARAM 4 | Release (1 fast, 9 slow) | 0.375 | 4.0000000
+PARAM 5 | Ratio | 0 | 0
+PARAM 6 | Stereo Link | 1 | On
+  0 = Off
+  1 = On
+PARAM 7 | Meter Output | 0 | Off
+  0 = Off
+  1 = On
+PARAM 8 | Bypass | 0 | Off
+  0 = Off
+  1 = On
+APPLIED PARAMETERS
+PARAM 0 | Power | 1 | On
+  0 = Off
+  1 = On
+PARAM 1 | Input | 1 | 10.0000000
+PARAM 2 | Output | 0.5 | 5.0000000
+PARAM 3 | Attack (1 fast, 9 slow) | 1 | 9.0000000
+PARAM 4 | Release (1 fast, 9 slow) | 0.375 | 4.0000000
+PARAM 5 | Ratio | 0 | 0
+PARAM 6 | Stereo Link | 1 | On
+  0 = Off
+  1 = On
+PARAM 7 | Meter Output | 0 | Off
+  0 = Off
+  1 = On
+PARAM 8 | Bypass | 0 | Off
+  0 = Off
+  1 = On
+SPECTRUM harmonic=1 dBc=0
+SPECTRUM harmonic=2 dBc=-45.4466
+SPECTRUM harmonic=3 dBc=-13.5942
+SPECTRUM harmonic=4 dBc=-50.881

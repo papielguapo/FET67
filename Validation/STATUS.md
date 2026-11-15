@@ -1,0 +1,48 @@
+# Validación de FET 67 1.2.0
+
+15 de noviembre de 2026. Windows x64, JUCE 9.0.5, C++17. Estado: **candidato de validación**, sin certificación comercial completa.
+
+## Correcciones comprobadas
+
+| Ensayo | 1.1 | 1.2 |
+|---|---:|---:|
+| Exceso de pico al volver del bypass, primer bloque del ensayo | +9,26 dB | +0,243 dB durante el fundido |
+| Residuo frente al control después del fundido | Reiniciaba detector | 0 en el ensayo |
+| Error RMS estéreo con máximos alternados | +3,008 dB | Aproximadamente 0,0001 dB |
+| Alias 18 kHz: seno 10 kHz, 48 kHz, Input 10, Attack 9 | −13,61 dBc | −106,23 dBc |
+| Alias plegado: seno 10 kHz, 44,1 kHz | Sin ensayo equivalente | −111,44 dBc |
+| H2: seno 1 kHz, Input 10, Attack 9 | −45,45 dBc | −35,96 dBc |
+| H3: misma condición | −13,59 dBc | −24,19 dBc |
+| Ruta de plugin inexistente | Éxito falso | Error y regresión automática |
+
+Los bins de aliasing no representan toda la energía de aliasing. Los armónicos son relativos a la fundamental de cada salida y dependen de la condición. No demuestran identidad con Bluey.
+
+FIX iguala el RMS en el ensayo estacionario a unos 0,02 dB tras estabilizar; al desactivarlo, el residuo frente al procesador de control es 0. La prueba también verifica que no modifique el audio seco con POWER OFF.
+
+## Suite automática
+
+- CTest: DSP, ExtendedValidation y MissingPluginRejected.
+- pluginval oficial 1.0.4 nivel 10, dos repeticiones aleatorizadas; matriz 44,1/48/96/192 kHz y bloques 1/16/64/128/512/2048. Incluye editor, automatización, fuzz y estado desde hilo de fondo. Consulta el registro final, no los logs de iteraciones previas.
+- Robustez adicional a 44,1/48/88,2/96/176,4/192 kHz; bloques de 4097 pese a anunciar 16 en prepare; buffers vacíos; NaN/Inf y valores extremos.
+- Partición de bloques 1/7/31/127/1025/8193 frente a 128: error máximo 0 en el ensayo.
+- Impulso seco: exactamente los 65 samples de latencia declarados.
+- Cero asignaciones mediante operator new en los callbacks ensayados. El monitor no intercepta directamente malloc; no es una certificación de toda actividad de memoria del sistema.
+- Silencio digital recién preparado: pico 0 con Input y Output en 10. Cola: pico 0 en la última ventana. El valor −300 dBFS del informe es un suelo numérico para evitar log(0), no una medición analógica.
+- Benchmark indicativo: alrededor de 8–10 % de un núcleo a 48 kHz estéreo en esta máquina. No garantiza carga en otros equipos ni plazos de tiempo real bajo cualquier carga.
+
+La validación extrema encontró que APVTS redondeaba interruptores mientras el host conservaba automatización normalizada fraccionaria. El estado final conserva ambas representaciones. Los logs antiguos con fallos se mantienen como historial; no son el resultado final.
+
+## Prueba vocal privada
+
+Extracto educativo: Al James, Schoolboy Fascination, Cambridge-MT, 33 WAV 24 bits/44,1 kHz. **No procede de Abbey Road.** Voz principal renderizada con CLA-76 Bluey/Analog Off y dos ajustes de FET 67, con latencia retirada y 0,5 s de cola. Se igualó RMS ajustando OUTPUT manualmente. El audio es finito y tiene la misma duración; picos y envolventes difieren. No hay aprobación auditiva ni equivalencia de GR demostrada.
+
+El proveedor restringe esas pistas a uso educativo. Audio y renders permanecen fuera del repositorio y de la distribución comercial. No se utilizan como material publicitario ni como autorización de explotación comercial.
+
+## Pendiente para cerrar la aceptación comercial
+
+1. **FL Studio:** carga, reproducción, compensación de latencia, automatización, guardado/reapertura y exportación. El control de Windows falló antes de iniciarla: `failed to write kernel assets`, error 3, también después de reset. No se marca como realizada.
+2. **Escucha:** varias voces y voz en mezcla; sibilancia, consonantes, respiraciones y preferencia musical a niveles igualados. Decisión final del propietario.
+3. **Otros hosts y Steinberg validator:** no ejecutados aquí. pluginval no sustituye esas comprobaciones.
+4. **Distribución:** binarios sin Authenticode. No se han verificado credenciales de firma, licencia comercial de JUCE, instalador ni soporte. No se han creado certificados ni modificado la confianza de Windows.
+
+GitHub Actions reproduce compilación y pruebas con Visual Studio 2022. El resultado de su ejecución se registra por separado; la existencia del workflow no equivale a haberlo superado.

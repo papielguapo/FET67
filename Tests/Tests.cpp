@@ -50,15 +50,19 @@ void dumpParameters(juce::AudioProcessor& p)
         if(parameter->getNumSteps()<100) for(int step=0;step<parameter->getNumSteps();++step) {float v=static_cast<float>(step)/static_cast<float>(juce::jmax(1,parameter->getNumSteps()-1));std::cout<<"  "<<v<<" = "<<parameter->getText(v,100).toStdString()<<"\n";}}
 }
 }
+#include "Validation.h"
+#include "OfflineRender.h"
 int main(int argc,char** argv)
 {
     juce::ScopedJuceInitialiser_GUI init;
     try
     {
+        if(argc>1&&juce::String(argv[1])=="--validate")return validation::run();
         if(argc>2&&juce::String(argv[1])=="--scan")
         {
             juce::VST3PluginFormat format;juce::OwnedArray<juce::PluginDescription> types;
             format.findAllTypesForFile(types,argv[2]);
+            require(!types.isEmpty(),"No VST3 plugins found at requested path");
             for(auto* d:types) {std::cout<<d->name<<" | "<<d->uniqueId<<"\n";if(d->name.containsIgnoreCase("CLA-76")||argc>3){std::cout<<d->createXml()->toString().toStdString()<<"\n";if(argc>3){const auto file=juce::File(juce::String(argv[3])).getChildFile(juce::File::createLegalFileName(d->name)+".xml");d->createXml()->writeTo(file);}}}
             return 0;
         }
@@ -72,16 +76,24 @@ int main(int argc,char** argv)
             while(!done&&juce::Time::getMillisecondCounter()-start<30000)juce::MessageManager::getInstance()->runDispatchLoopUntil(20);
             require(instance!=nullptr,error.isEmpty()?"Reference load timeout":error.toRawUTF8());
             dumpParameters(*instance);
-            if(argc>3&&juce::String(argv[3])=="--measure")
+            if(argc>3&&(juce::String(argv[3])=="--measure"||juce::String(argv[3])=="--spectrum"||juce::String(argv[3])=="--render-audio"))
             {
                 // Further arguments are index=normalisedValue, taken from the dumped public parameter metadata.
-                for(int a=4;a<argc;++a){auto pair=juce::StringArray::fromTokens(argv[a],"=","");if(pair.size()==2){int index=pair[0].getIntValue();if(juce::isPositiveAndBelow(index,instance->getParameters().size()))instance->getParameters()[index]->setValueNotifyingHost(pair[1].getFloatValue());}}
-                instance->setRateAndBufferSizeDetails(48000,128);instance->prepareToPlay(48000,128);
-                std::cout<<"APPLIED PARAMETERS\n";dumpParameters(*instance);measure(*instance);
+                const bool render=juce::String(argv[3])=="--render-audio";
+                require(!render||argc>5,"Audio rendering requires input and output paths");
+                for(int a=render?6:4;a<argc;++a){auto pair=juce::StringArray::fromTokens(argv[a],"=","");if(pair.size()==2){int index=pair[0].getIntValue();if(juce::isPositiveAndBelow(index,instance->getParameters().size()))instance->getParameters()[index]->setValueNotifyingHost(pair[1].getFloatValue());}}
+                std::cout<<"APPLIED PARAMETERS\n";dumpParameters(*instance);
+                if(render)return renderAudioFile(*instance,juce::File(juce::String(argv[4])),juce::File(juce::String(argv[5])));
+                if(juce::String(argv[3])=="--spectrum")validation::spectrum(*instance);else measure(*instance);
             }
             return 0;
         }
         FET67Processor p;
+        if(argc>3&&juce::String(argv[1])=="--render-fet")
+        {
+            for(int a=4;a<argc;++a){auto pair=juce::StringArray::fromTokens(argv[a],"=","");if(pair.size()==2&&p.apvts.getParameter(pair[0])!=nullptr)set(p,pair[0],pair[1].getFloatValue());}
+            return renderAudioFile(p,juce::File(juce::String(argv[2])),juce::File(juce::String(argv[3])));
+        }
         if(argc>1&&juce::String(argv[1])=="--fetmeasure")
         {
             for(int a=2;a<argc;++a){auto pair=juce::StringArray::fromTokens(argv[a],"=","");if(pair.size()==2&&p.apvts.getParameter(pair[0])!=nullptr)set(p,pair[0],pair[1].getFloatValue());}
@@ -91,7 +103,8 @@ int main(int argc,char** argv)
         juce::AudioBuffer<float> b(2,128);juce::MidiBuffer midi;
         set(p,"bypass",1);p.reset();
         for(int i=0;i<128;++i){b.setSample(0,i,0.2f);b.setSample(1,i,-0.3f);}p.processBlock(b,midi);
-        require(b.getSample(0,50)==0.2f&&b.getSample(1,50)==-0.3f,"Bypass not transparent");
+        for(int block=0;block<20;++block){for(int i=0;i<128;++i){b.setSample(0,i,0.2f);b.setSample(1,i,-0.3f);}p.processBlock(b,midi);}
+        require(b.getSample(0,50)==0.2f&&b.getSample(1,50)==-0.3f,"Latency-aligned bypass not transparent");
         set(p,"bypass",0);set(p,"input",0);p.reset();sine(p,0.5f);
         require(p.currentOutDb.load()<-90,"Input OFF leaks signal");
         set(p,"input",4.5f);p.reset();
@@ -109,7 +122,7 @@ int main(int argc,char** argv)
             FET67Processor mono;juce::AudioProcessor::BusesLayout layout;layout.inputBuses.add(juce::AudioChannelSet::mono());layout.outputBuses.add(juce::AudioChannelSet::mono());
             require(mono.setBusesLayout(layout),"Mono layout rejected");mono.prepareToPlay(sr,511);set(mono,"input",10);set(mono,"output",10);mono.reset();
             juce::AudioBuffer<float> m(1,511);
-            for(int block=0;block<50;++block){for(int i=0;i<511;++i)m.setSample(0,i,std::sin(static_cast<float>(block*511+i)*0.17f));mono.processBlock(m,midi);for(int i=0;i<511;++i)require(std::isfinite(m.getSample(0,i))&&std::abs(m.getSample(0,i))<=1,"Extreme drive unstable");}
+            for(int block=0;block<50;++block){for(int i=0;i<511;++i)m.setSample(0,i,std::sin(static_cast<float>(block*511+i)*0.17f));mono.processBlock(m,midi);for(int i=0;i<511;++i)require(std::isfinite(m.getSample(0,i))&&std::abs(m.getSample(0,i))<2,"Extreme drive unstable");}
         }
         if(argc>2&&juce::String(argv[1])=="--render")
         {
