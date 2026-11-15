@@ -1,0 +1,54 @@
+#pragma once
+#include <juce_audio_processors/juce_audio_processors.h>
+#include <array>
+#include <atomic>
+
+class FET67Processor final : public juce::AudioProcessor
+{
+public:
+    FET67Processor();
+    void prepareToPlay(double, int) override;
+    void releaseResources() override {}
+    void reset() override;
+    bool isBusesLayoutSupported(const BusesLayout&) const override;
+    void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void processBlockBypassed(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    juce::AudioProcessorParameter* getBypassParameter() const override;
+    juce::AudioProcessorEditor* createEditor() override;
+    bool hasEditor() const override { return true; }
+    const juce::String getName() const override { return "FET 67"; }
+    bool acceptsMidi() const override { return false; }
+    bool producesMidi() const override { return false; }
+    bool isMidiEffect() const override { return false; }
+    double getTailLengthSeconds() const override { return 0.0; }
+    int getNumPrograms() override { return 1; }
+    int getCurrentProgram() override { return 0; }
+    void setCurrentProgram(int) override {}
+    const juce::String getProgramName(int) override { return "Default"; }
+    void changeProgramName(int, const juce::String&) override {}
+    void getStateInformation(juce::MemoryBlock&) override;
+    void setStateInformation(const void*, int) override;
+    static juce::AudioProcessorValueTreeState::ParameterLayout makeParameters();
+    juce::AudioProcessorValueTreeState apvts;
+    std::atomic<float> currentGrDb { 0.0f }, currentOutDb { -100.0f };
+    std::atomic<int> editorWidth { 1140 }, editorHeight { 156 };
+private:
+    struct HighPass
+    {
+        float previousInput = 0, previousOutput = 0, pole = 0;
+        float tick(float x) noexcept { const float y = pole * (previousOutput + x - previousInput); previousInput = x; previousOutput = y; return y; }
+        void clear() noexcept { previousInput = previousOutput = 0; }
+    };
+    struct Channel
+    {
+        HighPass inputHP, fetHP;
+        float delayed = 0, fast = 0, slow = 0, lag = 0, gr = 0;
+    };
+    std::array<Channel, 2> channels;
+    std::atomic<float> *power, *input, *output, *attack, *release, *ratio, *link, *bypass;
+    juce::SmoothedValue<float> inputGain, outputGain, wet, attackTime, releaseTime, linkMix;
+    double rate = 44100;
+    float rms = 0, grMeter = 0, meterRelease = 0, rmsPole = 0;
+    bool wasBypassed = false;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FET67Processor)
+};
