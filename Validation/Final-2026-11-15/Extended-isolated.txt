@@ -1,0 +1,25 @@
+BYPASS first-block excess_dB=0.24316 after-fade residual=0 latency_samples=65
+METER measured_dB=-15.0514 expected_dB=-15.0515
+ROBUST sr=44100 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=48000 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=88200 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=96000 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=176400 oversized=4097 prepared=16 latency=65 PASS
+ROBUST sr=192000 oversized=4097 prepared=16 latency=65 PASS
+ALIAS sr=48000 input_Hz=10000 folded_Hz=18000 dBc=-106.23
+ALIAS sr=44100 input_Hz=10000 folded_Hz=14100 dBc=-111.437
+BLOCK_INVARIANCE max_error=0
+PERFORMANCE block=32 single-core-average-percent=9.8901 worst_ms=0.3619 deadline_ms=0.666667
+PERFORMANCE block=64 single-core-average-percent=9.5961 worst_ms=0.3005 deadline_ms=1.33333
+PERFORMANCE block=128 single-core-average-percent=9.65738 worst_ms=0.4975 deadline_ms=2.66667
+PERFORMANCE block=512 single-core-average-percent=9.20332 worst_ms=1.7633 deadline_ms=10.6667
+REALTIME_CPP_NEW allocations=0 (native malloc is outside this monitor)
+SILENCE fresh_peak=0 tail_RMS_dBFS=-300 tail_peak=0 (numerical reporting floor -300 dBFS)
+FRACTIONAL_SWITCH_STATE PASS
+FIX matched_RMS=-23.0298 input_RMS=-23.0103 disabled_residual=0 PASS
+SC_FILTER 40Hz_GR_off=8.18484 on=3.14598 1kHz_GR_off=8.88863 on=8.86261 inactive_audio_error=0 PASS
+SPECTRUM harmonic=1 dBc=0
+SPECTRUM harmonic=2 dBc=-35.9642
+SPECTRUM harmonic=3 dBc=-24.1923
+SPECTRUM harmonic=4 dBc=-51.5634
+EXTENDED VALIDATION PASS
