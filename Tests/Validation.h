@@ -190,7 +190,7 @@ inline void silenceFloor()
 inline void fractionalSwitchState()
 {
     FET67Processor p;
-    for(const char* id:{"power","link","meterMode","bypass","fix","scFilter"})
+    for(const char* id:{"power","link","meterMode","bypass","fix","scFilter","externalSC"})
     {
         auto* param=p.apvts.getParameter(id);param->setValueNotifyingHost(0.550392f);
         require(std::abs(param->getValue()-0.550392f)<1e-6f,"Normalized automation representation changed");
@@ -201,13 +201,16 @@ inline void fractionalSwitchState()
     auto legacy=p.apvts.copyState();
     legacy.removeChild(legacy.getChildWithProperty("id","fix"),nullptr);
     legacy.removeChild(legacy.getChildWithProperty("id","scFilter"),nullptr);
+    legacy.removeChild(legacy.getChildWithProperty("id","externalSC"),nullptr);
     juce::MemoryBlock oldState;
     if(auto xml=legacy.createXml())juce::AudioProcessor::copyXmlToBinary(*xml,oldState);
     p.apvts.getParameter("fix")->setValueNotifyingHost(1);
     p.apvts.getParameter("scFilter")->setValueNotifyingHost(1);
+    p.apvts.getParameter("externalSC")->setValueNotifyingHost(1);
     p.setStateInformation(oldState.getData(),static_cast<int>(oldState.getSize()));
     require(p.apvts.getRawParameterValue("fix")->load()==0,"Legacy session unexpectedly enables FIX");
     require(p.apvts.getRawParameterValue("scFilter")->load()==0,"Legacy session unexpectedly enables SC FILTER");
+    require(p.apvts.getRawParameterValue("externalSC")->load()==0,"Legacy session unexpectedly selects external detector");
     std::cout<<"FRACTIONAL_SWITCH_STATE PASS\n";
 }
 
@@ -265,6 +268,10 @@ inline void sidechainFilter()
 
 inline void hostedExternalSidechain(juce::AudioProcessor& p)
 {
+    bool selected=false;
+    for(auto* parameter:p.getParameters())if(parameter->getName(100)=="External Sidechain")
+    {parameter->setValueNotifyingHost(1.f);selected=true;}
+    require(selected,"Missing external sidechain selector");
     require(p.getBusCount(true)==2,"Hosted VST3 does not expose an auxiliary input");
     auto layout=p.getBusesLayout();layout.inputBuses.set(0,juce::AudioChannelSet::stereo());
     layout.inputBuses.set(1,juce::AudioChannelSet::stereo());layout.outputBuses.set(0,juce::AudioChannelSet::stereo());
@@ -302,6 +309,24 @@ inline void hostedExternalSidechain(juce::AudioProcessor& p)
 
 inline void externalSidechain()
 {
+    {
+        FET67Processor internal,auxiliary;
+        auto layout=auxiliary.getBusesLayout();layout.inputBuses.set(1,juce::AudioChannelSet::stereo());
+        require(auxiliary.setBusesLayout(layout),"Unused auxiliary bus rejected");
+        require(auxiliary.apvts.getRawParameterValue("externalSC")->load()==0,"External detector should default OFF");
+        internal.prepareToPlay(48000,128);auxiliary.prepareToPlay(48000,128);
+        juce::AudioBuffer<float> a(2,128),b(4,128);juce::MidiBuffer midi;float error=0;
+        for(int block=0;block<1125;++block)
+        {
+            fillTone(a,block*128,80);b.clear();
+            for(int ch=0;ch<2;++ch)b.copyFrom(ch,0,a,ch,0,128);
+            if(block>500)for(int i=0;i<128;++i)b.setSample(3,i,0.8f);
+            internal.processBlock(a,midi);auxiliary.processBlock(b,midi);
+            for(int ch=0;ch<2;++ch)for(int i=0;i<128;++i)error=juce::jmax(error,std::abs(a.getSample(ch,i)-b.getSample(ch,i)));
+        }
+        require(error==0&&auxiliary.currentGrDb.load()>5,"Unused auxiliary bus bypasses internal compression");
+        std::cout<<"UNUSED_AUX_INTERNAL max_error="<<error<<" GR="<<auxiliary.currentGrDb.load()<<" PASS\n";
+    }
     for(int mainChannels : {1,2}) for(int keyChannels : {1,2})
     {
         auto runKey = [=](float keyLevel, bool silentMain, bool filter)
@@ -311,7 +336,7 @@ inline void externalSidechain()
             layout.outputBuses.set(0,layout.inputBuses[0]);
             layout.inputBuses.set(1,keyChannels==1?juce::AudioChannelSet::mono():juce::AudioChannelSet::stereo());
             require(p.setBusesLayout(layout),"External sidechain layout rejected");
-            set(p,"scFilter",filter?1.f:0.f);p.prepareToPlay(48000,128);
+            set(p,"externalSC",1);set(p,"scFilter",filter?1.f:0.f);p.prepareToPlay(48000,128);
             juce::AudioBuffer<float> b(mainChannels+keyChannels,128);juce::MidiBuffer midi;
             for(int block=0;block<1125;++block)
             {
@@ -335,7 +360,7 @@ inline void externalSidechain()
         std::cout<<"EXTERNAL_SC main="<<mainChannels<<" key="<<keyChannels<<" silent_GR="<<silent<<" loud_GR="<<loud<<" filtered_GR="<<filtered<<" no_leak PASS\n";
     }
     FET67Processor p;auto layout=p.getBusesLayout();layout.inputBuses.set(1,juce::AudioChannelSet::stereo());
-    require(p.setBusesLayout(layout),"Stereo sidechain rejected");p.prepareToPlay(48000,16);
+    require(p.setBusesLayout(layout),"Stereo sidechain rejected");set(p,"externalSC",1);p.prepareToPlay(48000,16);
     juce::AudioBuffer<float> b(4,4097);juce::MidiBuffer midi;
     for(int ch=0;ch<4;++ch)for(int i=0;i<4097;++i)b.setSample(ch,i,ch>=2&&i%7==0?std::numeric_limits<float>::quiet_NaN():0.1f);
     beginAllocationMonitoring();p.processBlock(b,midi);const auto allocations=endAllocationMonitoring();

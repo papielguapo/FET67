@@ -93,6 +93,8 @@ int main(int argc,char** argv)
         FET67Processor p;
         if(argc>3&&juce::String(argv[1])=="--render-fet")
         {
+            for(int a=4;a<argc;++a)if(juce::String(argv[a])=="externalBus=1")
+            {auto layout=p.getBusesLayout();layout.inputBuses.set(1,juce::AudioChannelSet::stereo());require(p.setBusesLayout(layout),"Cannot enable external bus");}
             for(int a=4;a<argc;++a){auto pair=juce::StringArray::fromTokens(argv[a],"=","");if(pair.size()==2&&p.apvts.getParameter(pair[0])!=nullptr)set(p,pair[0],pair[1].getFloatValue());}
             return renderAudioFile(p,juce::File(juce::String(argv[2])),juce::File(juce::String(argv[3])));
         }

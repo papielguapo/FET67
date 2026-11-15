@@ -1,10 +1,18 @@
 # FET 67 — papielguapo
 
-**Fabricante: papielguapo · 1.2.3 Clean + Sidechain · Windows x64**
+**Fabricante: papielguapo · 1.2.4 Clean + Sidechain · Windows x64**
 
 ![FET 67 con POWER a la izquierda y FIX bajo el medidor](Preview-v1.2.png)
 
 Compresor FET mono/estéreo, C++17/JUCE 9.0.5, VST3 y Standalone. Detector de realimentación, recuperación dependiente del programa y coloración asimétrica. Es un modelo original comparado con CLA-76 Bluey; no se ha demostrado equivalencia 1:1 ni preferencia en escucha ciega.
+
+## Selección segura del detector en 1.2.4
+
+El parámetro **External Sidechain** del host está apagado por defecto. Activar un bus auxiliar por sí solo ya no sustituye el detector interno por una entrada silenciosa. Esto evita perder la compresión y saturar la salida al subir INPUT en hosts que habilitan buses auxiliares sin enviarles audio. No se añade ningún control a la skin.
+
+Para usar sidechain externo: enruta el key al bus **Sidechain** y activa **External Sidechain** en los parámetros del host. Para volver al detector interno, apaga ese parámetro. Si el bus está deshabilitado se usa el detector interno. Con selección externa y bus activo, un key silencioso sí libera la compresión, como corresponde al ducking.
+
+Los proyectos anteriores recuperan External Sidechain apagado; si utilizaban ruteo externo, deben activarlo explícitamente y guardar el proyecto. Se mantienen los IDs anteriores y se añade el nuevo parámetro al final. [Pruebas y procedencia](Validation/Detector-1.2.4/RESULTADOS.md).
 
 ## Entrada numérica de 1.2.3
 
@@ -14,7 +22,7 @@ INPUT/OUTPUT usan 0–10 y ATTACK/RELEASE 1–9, como los números de la skin; e
 
 ## Sidechain externo de 1.2.2
 
-Bus de entrada **Sidechain** opcional mono/estéreo, apagado por defecto y controlado por el DAW. No hay botones nuevos ni cambios en la skin. Con el bus desactivado se utiliza el detector interno de siempre. Con el bus activado, su audio externo dispara la compresión del audio principal y no se mezcla con él; un bus externo activo pero silencioso no vuelve automáticamente al detector interno. INPUT también ajusta la sensibilidad del detector externo; la ganancia virtual de realimentación conserva la calibración del controlador.
+Bus de entrada **Sidechain** opcional mono/estéreo, apagado por defecto y controlado por el DAW. No hay botones nuevos ni cambios en la skin. En 1.2.4 el detector externo requiere activar también **External Sidechain** desde los parámetros del host. Su audio dispara la compresión del audio principal sin mezclarse con él; un key externo seleccionado y silencioso no vuelve automáticamente al detector interno. INPUT también ajusta la sensibilidad del detector externo; la ganancia virtual de realimentación conserva la calibración del controlador.
 
 El SC FILTER existente aplica sus 80 Hz también al detector externo. El enlace estéreo se conserva; una entrada principal mono reacciona al mayor nivel de los dos canales del key estéreo. La entrada externa se sobremuestrea a 8× con el mismo filtro de subida que la principal. No cambia la latencia declarada.
 
@@ -79,7 +87,7 @@ Se preparó un A/B educativo privado con la voz de Al James, Schoolboy Fascinati
 
 ## Instalar
 
-Descarga el [ZIP de 1.2.3 RC2](https://github.com/papielguapo/FET67/releases/tag/v1.2.3-rc2) y copia la carpeta completa `Binaries/FET 67.vst3` a `C:\Program Files\Common Files\VST3`. Puede requerir permisos de administrador. Cierra instancias cargadas antes de actualizar, reescanea plugins y busca **FET 67 / Papielguapo**. También se entrega Standalone. No se incluye instalador ni firma Authenticode.
+Descarga el [ZIP de 1.2.4 RC1](https://github.com/papielguapo/FET67/releases/tag/v1.2.4-rc1) y copia la carpeta completa `Binaries/FET 67.vst3` a `C:\Program Files\Common Files\VST3`. Puede requerir permisos de administrador. Cierra instancias cargadas antes de actualizar, reescanea plugins y busca **FET 67 / Papielguapo**. También se entrega Standalone. No se incluye instalador ni firma Authenticode.
 
 ## Compilar y validar
 

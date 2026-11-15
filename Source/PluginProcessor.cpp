@@ -44,6 +44,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout FET67Processor::makeParamete
     addBool("bypass", "Bypass", false);
     addBool("fix", "FIX Level Match", false);
     addBool("scFilter", "SC Filter 80 Hz", false);
+    addBool("externalSC", "External Sidechain", false);
     return p;
 }
 FET67Processor::FET67Processor()
@@ -58,6 +59,7 @@ FET67Processor::FET67Processor()
     link = apvts.getRawParameterValue("link"); bypass = apvts.getRawParameterValue("bypass");
     fix = apvts.getRawParameterValue("fix");
     scFilter = apvts.getRawParameterValue("scFilter");
+    externalSC = apvts.getRawParameterValue("externalSC");
 }
 bool FET67Processor::isBusesLayoutSupported(const BusesLayout& l) const
 {
@@ -211,7 +213,9 @@ void FET67Processor::process(juce::AudioBuffer<float>& b, juce::MidiBuffer& midi
     auto main = getBusBuffer(b, false, 0);
     const int n = juce::jmin(2, main.getNumChannels());
     if (n == 0 || oversampling == nullptr) return;
-    const bool external = getBus(true, 1)->isEnabled();
+    // Hosts may enable an unused auxiliary bus. Bus activation alone must not
+    // replace the internal detector with silence and expose the output saturator.
+    const bool external = externalSC->load() > 0.5f && getBus(true, 1)->isEnabled();
     auto key = getBusBuffer(b, true, 1);
     inputGain.setTargetValue(inputLevel(input->load()));
     outputGain.setTargetValue(gain((output->load() - 5) * 4.8f));
@@ -335,6 +339,8 @@ void FET67Processor::setStateInformation(const void* data, int size)
                 apvts.getParameter("fix")->setValueNotifyingHost(0.0f);
             if (!state.getChildWithProperty("id", "scFilter").isValid())
                 apvts.getParameter("scFilter")->setValueNotifyingHost(0.0f);
+            if (!state.getChildWithProperty("id", "externalSC").isValid())
+                apvts.getParameter("externalSC")->setValueNotifyingHost(0.0f);
             editorWidth.store(juce::jlimit(817, 4085, static_cast<int>(state.getProperty("editorWidth", 1634))));
             editorHeight.store(juce::jlimit(126, 630, static_cast<int>(state.getProperty("editorHeight", 252))));
             apvts.replaceState(state);

@@ -27,11 +27,12 @@ inline int renderAudioFile(juce::AudioProcessor& processor, const juce::File& in
     for(juce::int64 offset=0;offset<length+latency;offset+=512)
     {
         const int count=static_cast<int>(juce::jmin<juce::int64>(512,length+latency-offset));
-        juce::AudioBuffer<float> block(2,count);block.clear();
+        juce::AudioBuffer<float> block(juce::jmax(2,processor.getTotalNumInputChannels()),count);block.clear();
         if(offset<reader->lengthInSamples)
         {
-            reader->read(&block,0,static_cast<int>(juce::jmin<juce::int64>(count,reader->lengthInSamples-offset)),offset,true,true);
-            if(reader->numChannels==1)block.copyFrom(1,0,block,0,0,count);
+            auto main=processor.getBusBuffer(block,true,0);
+            reader->read(&main,0,static_cast<int>(juce::jmin<juce::int64>(count,reader->lengthInSamples-offset)),offset,true,true);
+            if(reader->numChannels==1&&main.getNumChannels()>1)main.copyFrom(1,0,main,0,0,count);
         }
         processor.processBlock(block,midi);
         const int skip=static_cast<int>(juce::jmax<juce::int64>(0,latency-offset));

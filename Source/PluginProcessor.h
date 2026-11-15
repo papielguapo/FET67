@@ -47,7 +47,7 @@ private:
         float delayed = 0, fast = 0, slow = 0, lag = 0, gr = 0;
     };
     std::array<Channel, 2> channels;
-    std::atomic<float> *power, *input, *output, *attack, *release, *ratio, *link, *bypass, *fix, *scFilter;
+    std::atomic<float> *power, *input, *output, *attack, *release, *ratio, *link, *bypass, *fix, *scFilter, *externalSC;
     void process(juce::AudioBuffer<float>&, juce::MidiBuffer&, bool hostBypassed);
     void processEngine(juce::dsp::AudioBlock<float>&, const juce::dsp::AudioBlock<float>*, int channelsToProcess, int mode);
     juce::SmoothedValue<float> inputGain, outputGain, wet, attackPole, releasePole, slowReleasePole, linkMix, scFilterMix;
