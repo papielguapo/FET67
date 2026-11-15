@@ -1,4 +1,6 @@
-# FET 67 — Papielguapo
+# FET 67 — papielguapo
+
+**Fabricante: papielguapo**
 
 ![Interfaz del plugin FET 67: frontal de aluminio con controles ultravioleta y medidor LED](Preview-v1.1.png)
 
