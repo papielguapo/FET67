@@ -1,6 +1,6 @@
 # Validación de FET 67 1.2.0
 
-**Histórico de 1.2.0. Revisiones: [1.2.1 Clean](Clean-1.2.1/RESULTADOS.md), [1.2.2 Sidechain](Sidechain-1.2.2/RESULTADOS.md) y [1.2.3 entrada numérica](ValueEntry-1.2.3/RESULTADOS.md). Las cifras de color y hashes de este archivo describen 1.2.0.**
+**Histórico de 1.2.0. Revisiones: [1.2.1 Clean](Clean-1.2.1/RESULTADOS.md), [1.2.2 Sidechain](Sidechain-1.2.2/RESULTADOS.md), [1.2.3 entrada numérica](ValueEntry-1.2.3/RESULTADOS.md) y [1.2.4 selección segura del detector](Detector-1.2.4/RESULTADOS.md). Las cifras de color y hashes de este archivo describen 1.2.0.**
 
 15 de noviembre de 2026. Windows x64, JUCE 9.0.5, C++17. Estado: **candidato de validación**, sin certificación comercial completa.
 

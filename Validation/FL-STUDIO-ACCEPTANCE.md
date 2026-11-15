@@ -15,7 +15,7 @@ Trabajar en un proyecto de prueba nuevo o en una copia, con monitores a nivel mo
 
 ## Sidechain externo (1.2.2)
 
-Con FIX apagado, enviar una pista disparadora mediante «Sidechain to this track» al insert con FET 67. En el wrapper, Processing → Connections, habilitar/asignar la entrada auxiliar Sidechain al envío. Comprobar que el key dispara GR y no se escucha en la salida; silenciarlo y observar la recuperación. Con bus externo activo y silencioso no debe conmutar al detector interno. Desactivar el bus para volver al detector interno. Probar SC FILTER, automatización, exportación offline y guardado/reapertura con la ruta externa. El estado de los buses/envíos se guarda en el proyecto del host.
+Con FIX apagado, enviar una pista disparadora mediante «Sidechain to this track» al insert con FET 67. En el wrapper, Processing → Connections, habilitar/asignar la entrada auxiliar Sidechain al envío. Desde 1.2.4, activar también el parámetro del host **External Sidechain**. Comprobar que el key dispara GR y no se escucha en la salida; silenciarlo y observar la recuperación. Con selección externa activa y key silencioso no debe conmutar al detector interno. Apagar External Sidechain para volver al detector interno; comprobar también que un bus auxiliar habilitado pero no seleccionado no afecta al audio. Probar SC FILTER, automatización, exportación offline y guardado/reapertura con la ruta externa. El estado de los buses/envíos se guarda en el proyecto del host.
 
 Referencia: [manual oficial de Connections](https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/wrapper.htm). No registrar estos pasos como superados hasta realizarlos en FL Studio.
 

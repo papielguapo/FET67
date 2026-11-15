@@ -1,0 +1,353 @@
+msvc-2022	Set up job	﻿2026-11-15T21:53:38.8710948Z Current runner version: '2.338.2'
+msvc-2022	Set up job	2026-11-15T21:53:38.8776498Z ##[group]Runner Image Provisioner
+msvc-2022	Set up job	2026-11-15T21:53:38.8777783Z Hosted Compute Agent
+msvc-2022	Set up job	2026-11-15T21:53:38.8778730Z Version: 20261103.629
+msvc-2022	Set up job	2026-11-15T21:53:38.8779798Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+msvc-2022	Set up job	2026-11-15T21:53:38.8780989Z Build Date: 2026-11-03T17:26:59Z
+msvc-2022	Set up job	2026-11-15T21:53:38.8782096Z Worker ID: {2a0977a9-4900-413e-aaf1-6c80dc20f594}
+msvc-2022	Set up job	2026-11-15T21:53:38.8783259Z Region: eastus
+msvc-2022	Set up job	2026-11-15T21:53:38.8784075Z Cloud: Azure
+msvc-2022	Set up job	2026-11-15T21:53:38.8784949Z ##[endgroup]
+msvc-2022	Set up job	2026-11-15T21:53:38.8787198Z ##[group]Operating System
+msvc-2022	Set up job	2026-11-15T21:53:38.8788233Z Microsoft Windows Server 2022
+msvc-2022	Set up job	2026-11-15T21:53:38.8789193Z 10.0.20348
+msvc-2022	Set up job	2026-11-15T21:53:38.8789935Z Datacenter
+msvc-2022	Set up job	2026-11-15T21:53:38.8790776Z ##[endgroup]
+msvc-2022	Set up job	2026-11-15T21:53:38.8791659Z ##[group]Runner Image
+msvc-2022	Set up job	2026-11-15T21:53:38.8792594Z Image: windows-2022
+msvc-2022	Set up job	2026-11-15T21:53:38.8793684Z Version: 20261112.366.7
+msvc-2022	Set up job	2026-11-15T21:53:38.8795594Z Included Software: https://github.com/actions/runner-images/blob/win22/20261112.366/images/windows/Windows2022-Readme.md
+msvc-2022	Set up job	2026-11-15T21:53:38.8798863Z Image Release: https://github.com/actions/runner-images/releases/tag/win22%2F20261112.366
+msvc-2022	Set up job	2026-11-15T21:53:38.8800577Z ##[endgroup]
+msvc-2022	Set up job	2026-11-15T21:53:38.8802303Z ##[group]GITHUB_TOKEN Permissions
+msvc-2022	Set up job	2026-11-15T21:53:38.8804811Z Contents: read
+msvc-2022	Set up job	2026-11-15T21:53:38.8805690Z Metadata: read
+msvc-2022	Set up job	2026-11-15T21:53:38.8806553Z ##[endgroup]
+msvc-2022	Set up job	2026-11-15T21:53:38.8809389Z Secret source: Actions
+msvc-2022	Set up job	2026-11-15T21:53:38.8810692Z Cache mode: write
+msvc-2022	Set up job	2026-11-15T21:53:38.8811764Z Prepare workflow directory
+msvc-2022	Set up job	2026-11-15T21:53:38.9138468Z Prepare all required actions
+msvc-2022	Set up job	2026-11-15T21:53:38.9185510Z Getting action download info
+msvc-2022	Set up job	2026-11-15T21:53:39.0802273Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+msvc-2022	Set up job	2026-11-15T21:53:39.2037320Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+msvc-2022	Set up job	2026-11-15T21:53:39.5387004Z Complete job name: msvc-2022
+msvc-2022	Run actions/checkout@v4	﻿2026-11-15T21:53:39.7224297Z ##[group]Run actions/checkout@v4
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7225647Z with:
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7226227Z   repository: papielguapo/FET67
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7231554Z   token: ***
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7232104Z   ssh-strict: true
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7232656Z   ssh-user: git
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7233175Z   persist-credentials: true
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7233676Z   clean: true
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7234137Z   sparse-checkout-cone-mode: true
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7234673Z   fetch-depth: 1
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7235103Z   fetch-tags: false
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7235555Z   show-progress: true
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7236009Z   lfs: false
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7236436Z   submodules: false
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7236894Z   set-safe-directory: true
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7237411Z   allow-unsafe-pr-checkout: false
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.7238162Z ##[endgroup]
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.8702822Z Syncing repository: papielguapo/FET67
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.8706529Z ##[group]Getting Git version info
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.8708264Z Working directory is 'D:\a\FET67\FET67'
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:39.9804561Z [command]"C:\Program Files\Git\bin\git.exe" version
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.3030983Z git version 2.56.1.windows.1
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.3073917Z ##[endgroup]
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.3091737Z Temporarily overriding HOME='D:\a\_temp\b7408b2d-b6d2-4445-9cc4-860ecb394c2a' before making global git config changes
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.3093630Z Adding repository directory to the temporary git global config as a safe directory
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.3102227Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\FET67\FET67
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.3705194Z Deleting the contents of 'D:\a\FET67\FET67'
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.3710562Z ##[group]Initializing the repository
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.3718855Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\FET67\FET67
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.4556322Z Initialized empty Git repository in D:/a/FET67/FET67/.git/
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.4591625Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/papielguapo/FET67
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.5208867Z ##[endgroup]
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.5210257Z ##[group]Disabling automatic garbage collection
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.5216265Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.5490295Z ##[endgroup]
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.5492005Z ##[group]Setting up auth
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.5501082Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:40.5783908Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:41.9185407Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:41.9464050Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:42.4142982Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:42.4437120Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:42.9138207Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:42.9429878Z ##[endgroup]
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:42.9430724Z ##[group]Fetching the repository
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:42.9442406Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +cf65118f4220500499510fc2f46ba9532e23ffce:refs/remotes/origin/main
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:43.9145032Z From https://github.com/papielguapo/FET67
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:43.9148966Z  * [new ref]         cf65118f4220500499510fc2f46ba9532e23ffce -> origin/main
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:43.9176786Z ##[endgroup]
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:43.9177431Z ##[group]Determining the checkout info
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:43.9179716Z ##[endgroup]
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:43.9188656Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:43.9607268Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:44.0005868Z ##[group]Checking out the ref
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:44.0014491Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:44.0885679Z Switched to a new branch 'main'
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:44.0908265Z branch 'main' set up to track 'origin/main'.
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:44.0946438Z ##[endgroup]
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:44.1357006Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+msvc-2022	Run actions/checkout@v4	2026-11-15T21:53:44.1622773Z cf65118f4220500499510fc2f46ba9532e23ffce
+msvc-2022	Configure C++17, VST3, Standalone and tests	﻿2026-11-15T21:53:44.1986236Z ##[group]Run cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DFET67_COPY_PLUGIN_AFTER_BUILD=OFF -DFET67_BUILD_TESTS=ON
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:44.1987192Z ^[[36;1mcmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DFET67_COPY_PLUGIN_AFTER_BUILD=OFF -DFET67_BUILD_TESTS=ON^[[0m
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:44.2100799Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:44.2101183Z ##[endgroup]
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:45.5167072Z -- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.20348.
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:56.5786386Z -- The C compiler identification is MSVC 19.44.35230.0
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:57.9212110Z -- The CXX compiler identification is MSVC 19.44.35230.0
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:58.0885412Z -- Detecting C compiler ABI info
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:59.1474340Z -- Detecting C compiler ABI info - done
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:59.1607620Z -- Check for working C compiler: C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:59.1621411Z -- Detecting C compile features
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:59.1633282Z -- Detecting C compile features - done
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:59.1931913Z -- Detecting CXX compiler ABI info
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:59.8900257Z -- Detecting CXX compiler ABI info - done
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:59.9036313Z -- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:59.9040509Z -- Detecting CXX compile features
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:53:59.9049123Z -- Detecting CXX compile features - done
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:54:07.1001097Z -- Configuring juceaide
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:54:10.9814025Z -- Building juceaide
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:55:30.7276132Z -- Exporting juceaide
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:55:30.7281493Z -- Testing juceaide
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:55:30.7506350Z -- Finished setting up juceaide
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:55:30.8068841Z -- Configuring done (105.6s)
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:55:30.9444559Z -- Generating done (0.1s)
+msvc-2022	Configure C++17, VST3, Standalone and tests	2026-11-15T21:55:30.9452277Z -- Build files have been written to: D:/a/FET67/FET67/build
+msvc-2022	Build Release	﻿2026-11-15T21:55:31.0668384Z ##[group]Run cmake --build build --config Release --parallel 2
+msvc-2022	Build Release	2026-11-15T21:55:31.0668934Z ^[[36;1mcmake --build build --config Release --parallel 2^[[0m
+msvc-2022	Build Release	2026-11-15T21:55:31.0706490Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+msvc-2022	Build Release	2026-11-15T21:55:31.0706854Z ##[endgroup]
+msvc-2022	Build Release	2026-11-15T21:55:31.4012087Z MSBuild version 17.14.60+43b635718 for .NET Framework
+msvc-2022	Build Release	2026-11-15T21:55:31.4317296Z 
+msvc-2022	Build Release	2026-11-15T21:55:31.7096926Z   Checking File Globs
+msvc-2022	Build Release	2026-11-15T21:55:32.0019669Z   1>Checking Build System
+msvc-2022	Build Release	2026-11-15T21:55:32.1963106Z   Building Custom Rule D:/a/FET67/FET67/CMakeLists.txt
+msvc-2022	Build Release	2026-11-15T21:55:32.2601985Z   Building VST3 manifest helper for FET67
+msvc-2022	Build Release	2026-11-15T21:55:32.2898216Z   -- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.20348.
+msvc-2022	Build Release	2026-11-15T21:55:33.2755951Z   -- The CXX compiler identification is MSVC 19.44.35230.0
+msvc-2022	Build Release	2026-11-15T21:55:33.3627690Z   -- Detecting CXX compiler ABI info
+msvc-2022	Build Release	2026-11-15T21:55:34.0242086Z   -- Detecting CXX compiler ABI info - done
+msvc-2022	Build Release	2026-11-15T21:55:34.0379298Z   -- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+msvc-2022	Build Release	2026-11-15T21:55:34.0384840Z   -- Detecting CXX compile features
+msvc-2022	Build Release	2026-11-15T21:55:34.0400001Z   -- Detecting CXX compile features - done
+msvc-2022	Build Release	2026-11-15T21:55:34.0427479Z   -- Configuring done (1.8s)
+msvc-2022	Build Release	2026-11-15T21:55:34.0604016Z   -- Generating done (0.0s)
+msvc-2022	Build Release	2026-11-15T21:55:34.0611589Z   -- Build files have been written to: D:/a/FET67/FET67/build/vst3_helpers/FET67
+msvc-2022	Build Release	2026-11-15T21:55:34.1583103Z   MSBuild version 17.14.60+43b635718 for .NET Framework
+msvc-2022	Build Release	2026-11-15T21:55:34.1868417Z   
+msvc-2022	Build Release	2026-11-15T21:55:34.4599617Z     1>Checking Build System
+msvc-2022	Build Release	2026-11-15T21:55:34.6012360Z     Building Custom Rule D:/a/FET67/FET67/build/_deps/juce-src/extras/Build/CMake/juce_vst3_helper/CMakeLists.txt
+msvc-2022	Build Release	2026-11-15T21:55:34.7221249Z     juce_VST3ManifestHelper.cpp
+msvc-2022	Build Release	2026-11-15T21:55:37.0278025Z     vst3_helper.vcxproj -> D:\a\FET67\FET67\build\vst3_helpers\FET67\vst3_helper.exe
+msvc-2022	Build Release	2026-11-15T21:55:37.0765157Z     Building Custom Rule D:/a/FET67/FET67/build/_deps/juce-src/extras/Build/CMake/juce_vst3_helper/CMakeLists.txt
+msvc-2022	Build Release	2026-11-15T21:55:37.1274805Z   Building Custom Rule D:/a/FET67/FET67/CMakeLists.txt
+msvc-2022	Build Release	2026-11-15T21:55:37.4265974Z   FET67_rc_lib.vcxproj -> D:\a\FET67\FET67\build\FET67_rc_lib.dir\Release\FET67_rc_lib.lib
+msvc-2022	Build Release	2026-11-15T21:55:37.4687583Z   Building Custom Rule D:/a/FET67/FET67/CMakeLists.txt
+msvc-2022	Build Release	2026-11-15T21:55:37.5935876Z   FET67Tests_rc_lib.vcxproj -> D:\a\FET67\FET67\build\FET67Tests_rc_lib.dir\Release\FET67Tests_rc_lib.lib
+msvc-2022	Build Release	2026-11-15T21:55:37.7008881Z   Building Custom Rule D:/a/FET67/FET67/CMakeLists.txt
+msvc-2022	Build Release	2026-11-15T21:55:37.8640545Z   PluginProcessor.cpp
+msvc-2022	Build Release	2026-11-15T21:55:37.8673327Z   PluginEditor.cpp
+msvc-2022	Build Release	2026-11-15T21:55:37.8690494Z   juce_audio_processors.cpp
+msvc-2022	Build Release	2026-11-15T21:55:37.8696244Z   juce_gui_extra.cpp
+msvc-2022	Build Release	2026-11-15T21:55:41.3570658Z D:\a\FET67\FET67\Source\PluginProcessor.cpp(154,70): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data [D:\a\FET67\FET67\build\FET67.vcxproj]
+msvc-2022	Build Release	2026-11-15T21:55:43.7022001Z   juce_gui_basics.cpp
+msvc-2022	Build Release	2026-11-15T21:55:44.2650574Z   juce_gui_basics_2.cpp
+msvc-2022	Build Release	2026-11-15T21:55:49.3229268Z   juce_gui_basics_3.cpp
+msvc-2022	Build Release	2026-11-15T21:55:49.4364745Z   juce_gui_basics_4.cpp
+msvc-2022	Build Release	2026-11-15T21:55:53.2423873Z   juce_gui_basics_5.cpp
+msvc-2022	Build Release	2026-11-15T21:56:04.4872092Z   juce_graphics.cpp
+msvc-2022	Build Release	2026-11-15T21:56:12.4945919Z   juce_graphics_Harfbuzz.cpp
+msvc-2022	Build Release	2026-11-15T21:56:15.1537144Z   juce_events.cpp
+msvc-2022	Build Release	2026-11-15T21:56:17.5854660Z   juce_core.cpp
+msvc-2022	Build Release	2026-11-15T21:56:21.1937501Z   juce_core_CompilationTime.cpp
+msvc-2022	Build Release	2026-11-15T21:56:21.2244154Z   juce_data_structures.cpp
+msvc-2022	Build Release	2026-11-15T21:56:26.0828970Z   juce_audio_processors_headless.cpp
+msvc-2022	Build Release	2026-11-15T21:56:36.2905492Z   juce_audio_processors_headless_ara.cpp
+msvc-2022	Build Release	2026-11-15T21:56:36.8445014Z   juce_audio_processors_headless_lv2_libs.cpp
+msvc-2022	Build Release	2026-11-15T21:56:37.0917880Z   juce_audio_basics.cpp
+msvc-2022	Build Release	2026-11-15T21:56:44.6435818Z   juce_audio_utils.cpp
+msvc-2022	Build Release	2026-11-15T21:56:54.5741373Z   juce_audio_formats.cpp
+msvc-2022	Build Release	2026-11-15T21:57:08.1167424Z   juce_audio_devices.cpp
+msvc-2022	Build Release	2026-11-15T21:57:20.0803446Z   juce_dsp.cpp
+msvc-2022	Build Release	2026-11-15T21:57:43.9530166Z   juce_graphics_Sheenbidi.c
+msvc-2022	Build Release	2026-11-15T21:57:43.9531505Z   juce_graphics_libjpg_1.c
+msvc-2022	Build Release	2026-11-15T21:57:43.9626893Z   juce_graphics_libjpg_2.c
+msvc-2022	Build Release	2026-11-15T21:57:43.9657526Z   juce_graphics_libjpg_3.c
+msvc-2022	Build Release	2026-11-15T21:57:45.1108467Z   juce_graphics_libpng.c
+msvc-2022	Build Release	2026-11-15T21:57:45.7588213Z   juce_graphics_libwebp_dec.c
+msvc-2022	Build Release	2026-11-15T21:57:46.3613973Z   juce_graphics_libwebp_dsp_dec.c
+msvc-2022	Build Release	2026-11-15T21:57:47.4876550Z   juce_graphics_libwebp_dsp_dec_avx2.c
+msvc-2022	Build Release	2026-11-15T21:57:47.9022305Z   juce_graphics_libwebp_dsp_dec_sse41.c
+msvc-2022	Build Release	2026-11-15T21:57:48.6755970Z   juce_graphics_libwebp_dsp_enc.c
+msvc-2022	Build Release	2026-11-15T21:57:49.2080331Z   juce_graphics_libwebp_dsp_enc_avx2.c
+msvc-2022	Build Release	2026-11-15T21:57:49.7258966Z   juce_graphics_libwebp_dsp_enc_sse41.c
+msvc-2022	Build Release	2026-11-15T21:57:49.8247578Z   juce_graphics_libwebp_enc.c
+msvc-2022	Build Release	2026-11-15T21:57:49.8274408Z   juce_graphics_libwebp_sharpyuv.c
+msvc-2022	Build Release	2026-11-15T21:57:50.1686641Z   juce_graphics_libwebp_utils.c
+msvc-2022	Build Release	2026-11-15T21:57:50.6118815Z   juce_graphics_lunasvg.c
+msvc-2022	Build Release	2026-11-15T21:57:50.8332649Z   juce_core_zlib.c
+msvc-2022	Build Release	2026-11-15T21:57:51.4277146Z   juce_audio_formats_flac_1.c
+msvc-2022	Build Release	2026-11-15T21:57:53.4460991Z   juce_audio_formats_flac_2.c
+msvc-2022	Build Release	2026-11-15T21:57:53.6492225Z   juce_audio_formats_ogg.c
+msvc-2022	Build Release	2026-11-15T21:57:53.8062850Z   juce_audio_formats_opus.c
+msvc-2022	Build Release	2026-11-15T21:57:54.5555455Z   juce_audio_formats_opusfile.c
+msvc-2022	Build Release	2026-11-15T21:58:00.5395870Z   FET67.vcxproj -> D:\a\FET67\FET67\build\FET67_artefacts\Release\FET 67_SharedCode.lib
+msvc-2022	Build Release	2026-11-15T21:58:00.5962754Z   Building Custom Rule D:/a/FET67/FET67/CMakeLists.txt
+msvc-2022	Build Release	2026-11-15T21:58:00.7327865Z   juce_audio_plugin_client_AAX.cpp
+msvc-2022	Build Release	2026-11-15T21:58:00.7377336Z   juce_audio_plugin_client_AAX_utils.cpp
+msvc-2022	Build Release	2026-11-15T21:58:00.7404166Z   juce_audio_plugin_client_ARA.cpp
+msvc-2022	Build Release	2026-11-15T21:58:00.7598501Z   juce_audio_plugin_client_LV2.cpp
+msvc-2022	Build Release	2026-11-15T21:58:00.7679710Z   juce_audio_plugin_client_Standalone.cpp
+msvc-2022	Build Release	2026-11-15T21:58:00.7683384Z   juce_audio_plugin_client_Unity.cpp
+msvc-2022	Build Release	2026-11-15T21:58:00.7701590Z   juce_audio_plugin_client_VST2.cpp
+msvc-2022	Build Release	2026-11-15T21:58:00.7732414Z   juce_audio_plugin_client_VST3.cpp
+msvc-2022	Build Release	2026-11-15T21:58:11.9145429Z      Creating library D:/a/FET67/FET67/build/FET67_artefacts/Release/VST3/FET 67.lib and object D:/a/FET67/FET67/build/FET67_artefacts/Release/VST3/FET 67.exp
+msvc-2022	Build Release	2026-11-15T21:58:12.1091316Z   FET67_VST3.vcxproj -> D:\a\FET67\FET67\build\FET67_artefacts\Release\VST3\FET 67.vst3\Contents\x86_64-win\FET 67.vst3
+msvc-2022	Build Release	2026-11-15T21:58:12.1625282Z   removing moduleinfo.json
+msvc-2022	Build Release	2026-11-15T21:58:12.1932055Z   creating D:/a/FET67/FET67/build/FET67_artefacts/Release/VST3/FET 67.vst3/Contents/Resources/moduleinfo.json
+msvc-2022	Build Release	2026-11-15T21:58:12.6249624Z   Building Custom Rule D:/a/FET67/FET67/CMakeLists.txt
+msvc-2022	Build Release	2026-11-15T21:58:12.6397632Z   Building Custom Rule D:/a/FET67/FET67/CMakeLists.txt
+msvc-2022	Build Release	2026-11-15T21:58:12.7078600Z   ReferenceCatalog.cpp
+msvc-2022	Build Release	2026-11-15T21:58:12.7501264Z   Building Custom Rule D:/a/FET67/FET67/CMakeLists.txt
+msvc-2022	Build Release	2026-11-15T21:58:12.8209491Z   Tests.cpp
+msvc-2022	Build Release	2026-11-15T21:58:12.9000545Z   AllocationMonitor.cpp
+msvc-2022	Build Release	2026-11-15T21:58:12.9050173Z   PluginProcessor.cpp
+msvc-2022	Build Release	2026-11-15T21:58:13.0224020Z   PluginEditor.cpp
+msvc-2022	Build Release	2026-11-15T21:58:13.4266276Z   juce_audio_utils.cpp
+msvc-2022	Build Release	2026-11-15T21:58:17.6020700Z   juce_audio_plugin_client_AAX.cpp
+msvc-2022	Build Release	2026-11-15T21:58:17.6548378Z   juce_audio_plugin_client_AAX_utils.cpp
+msvc-2022	Build Release	2026-11-15T21:58:17.7076936Z   juce_audio_plugin_client_ARA.cpp
+msvc-2022	Build Release	2026-11-15T21:58:17.7903577Z   juce_audio_plugin_client_LV2.cpp
+msvc-2022	Build Release	2026-11-15T21:58:17.8999605Z   juce_audio_plugin_client_Standalone.cpp
+msvc-2022	Build Release	2026-11-15T21:58:18.0408591Z   juce_audio_plugin_client_Unity.cpp
+msvc-2022	Build Release	2026-11-15T21:58:18.5264043Z   juce_audio_plugin_client_VST2.cpp
+msvc-2022	Build Release	2026-11-15T21:58:18.7030768Z   juce_audio_plugin_client_VST3.cpp
+msvc-2022	Build Release	2026-11-15T21:58:19.7510233Z   juce_audio_processors.cpp
+msvc-2022	Build Release	2026-11-15T21:58:19.8453841Z   juce_gui_extra.cpp
+msvc-2022	Build Release	2026-11-15T21:58:21.8725525Z   FET67ReferenceCatalog.vcxproj -> D:\a\FET67\FET67\build\Release\FET67ReferenceCatalog.exe
+msvc-2022	Build Release	2026-11-15T21:58:22.3263402Z   juce_gui_basics.cpp
+msvc-2022	Build Release	2026-11-15T21:58:26.2506846Z   juce_gui_basics_2.cpp
+msvc-2022	Build Release	2026-11-15T21:58:34.8198552Z   juce_gui_basics_3.cpp
+msvc-2022	Build Release	2026-11-15T21:58:36.0388828Z   juce_gui_basics_4.cpp
+msvc-2022	Build Release	2026-11-15T21:58:41.3239519Z   juce_gui_basics_5.cpp
+msvc-2022	Build Release	2026-11-15T21:58:42.5164180Z   FET67_Standalone.vcxproj -> D:\a\FET67\FET67\build\FET67_artefacts\Release\Standalone\FET 67.exe
+msvc-2022	Build Release	2026-11-15T21:58:56.6956431Z   juce_graphics.cpp
+msvc-2022	Build Release	2026-11-15T21:58:57.8830988Z   juce_graphics_Harfbuzz.cpp
+msvc-2022	Build Release	2026-11-15T21:59:01.7750145Z   juce_events.cpp
+msvc-2022	Build Release	2026-11-15T21:59:03.1384762Z   juce_core.cpp
+msvc-2022	Build Release	2026-11-15T21:59:07.7386525Z   juce_core_CompilationTime.cpp
+msvc-2022	Build Release	2026-11-15T21:59:07.7538303Z   juce_data_structures.cpp
+msvc-2022	Build Release	2026-11-15T21:59:13.3222204Z   juce_audio_processors_headless.cpp
+msvc-2022	Build Release	2026-11-15T21:59:19.6873001Z   juce_audio_processors_headless_ara.cpp
+msvc-2022	Build Release	2026-11-15T21:59:19.8770352Z   juce_audio_processors_headless_lv2_libs.cpp
+msvc-2022	Build Release	2026-11-15T21:59:20.3132390Z   juce_audio_basics.cpp
+msvc-2022	Build Release	2026-11-15T21:59:37.9506472Z   juce_audio_formats.cpp
+msvc-2022	Build Release	2026-11-15T21:59:55.9686550Z   juce_audio_devices.cpp
+msvc-2022	Build Release	2026-11-15T22:00:10.2874211Z   juce_dsp.cpp
+msvc-2022	Build Release	2026-11-15T22:00:35.0353634Z   juce_graphics_Sheenbidi.c
+msvc-2022	Build Release	2026-11-15T22:00:35.0398438Z   juce_graphics_libjpg_1.c
+msvc-2022	Build Release	2026-11-15T22:00:35.0403163Z   juce_graphics_libjpg_2.c
+msvc-2022	Build Release	2026-11-15T22:00:35.0412991Z   juce_graphics_libjpg_3.c
+msvc-2022	Build Release	2026-11-15T22:00:36.0434480Z   juce_graphics_libpng.c
+msvc-2022	Build Release	2026-11-15T22:00:36.7780778Z   juce_graphics_libwebp_dec.c
+msvc-2022	Build Release	2026-11-15T22:00:37.6388373Z   juce_graphics_libwebp_dsp_dec.c
+msvc-2022	Build Release	2026-11-15T22:00:38.7735869Z   juce_graphics_libwebp_dsp_dec_avx2.c
+msvc-2022	Build Release	2026-11-15T22:00:39.3939773Z   juce_graphics_libwebp_dsp_dec_sse41.c
+msvc-2022	Build Release	2026-11-15T22:00:39.9845818Z   juce_graphics_libwebp_dsp_enc.c
+msvc-2022	Build Release	2026-11-15T22:00:40.7672932Z   juce_graphics_libwebp_dsp_enc_avx2.c
+msvc-2022	Build Release	2026-11-15T22:00:40.7987939Z   juce_graphics_libwebp_dsp_enc_sse41.c
+msvc-2022	Build Release	2026-11-15T22:00:40.8004891Z   juce_graphics_libwebp_enc.c
+msvc-2022	Build Release	2026-11-15T22:00:41.2220456Z   juce_graphics_libwebp_sharpyuv.c
+msvc-2022	Build Release	2026-11-15T22:00:41.7290047Z   juce_graphics_libwebp_utils.c
+msvc-2022	Build Release	2026-11-15T22:00:41.9400137Z   juce_graphics_lunasvg.c
+msvc-2022	Build Release	2026-11-15T22:00:42.5357940Z   juce_core_zlib.c
+msvc-2022	Build Release	2026-11-15T22:00:43.0202302Z   juce_audio_formats_flac_1.c
+msvc-2022	Build Release	2026-11-15T22:00:44.6936270Z   juce_audio_formats_flac_2.c
+msvc-2022	Build Release	2026-11-15T22:00:45.0240396Z   juce_audio_formats_ogg.c
+msvc-2022	Build Release	2026-11-15T22:00:45.7112455Z   juce_audio_formats_opus.c
+msvc-2022	Build Release	2026-11-15T22:00:45.9614675Z   juce_audio_formats_opusfile.c
+msvc-2022	Build Release	2026-11-15T22:00:51.8673034Z   FET67Tests.vcxproj -> D:\a\FET67\FET67\build\FET67Tests_artefacts\Release\FET67Validation.exe
+msvc-2022	Build Release	2026-11-15T22:00:51.9198576Z   Building Custom Rule D:/a/FET67/FET67/CMakeLists.txt
+msvc-2022	Run regression tests	﻿2026-11-15T22:00:52.0976485Z ##[group]Run ctest --test-dir build -C Release --output-on-failure
+msvc-2022	Run regression tests	2026-11-15T22:00:52.0977145Z ^[[36;1mctest --test-dir build -C Release --output-on-failure^[[0m
+msvc-2022	Run regression tests	2026-11-15T22:00:52.1016665Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+msvc-2022	Run regression tests	2026-11-15T22:00:52.1017085Z ##[endgroup]
+msvc-2022	Run regression tests	2026-11-15T22:00:52.7600519Z Internal ctest changing into directory: D:/a/FET67/FET67/build
+msvc-2022	Run regression tests	2026-11-15T22:00:52.8641180Z Test project D:/a/FET67/FET67/build
+msvc-2022	Run regression tests	2026-11-15T22:00:52.9097386Z     Start 1: DSP
+msvc-2022	Run regression tests	2026-11-15T22:00:55.9245903Z 1/3 Test #1: DSP ..............................   Passed    3.01 sec
+msvc-2022	Run regression tests	2026-11-15T22:00:55.9314731Z     Start 2: ExtendedValidation
+msvc-2022	Run regression tests	2026-11-15T22:01:06.5606086Z 2/3 Test #2: ExtendedValidation ...............   Passed   10.63 sec
+msvc-2022	Run regression tests	2026-11-15T22:01:06.5609972Z     Start 3: MissingPluginRejected
+msvc-2022	Run regression tests	2026-11-15T22:01:06.5780758Z 3/3 Test #3: MissingPluginRejected ............   Passed    0.02 sec
+msvc-2022	Run regression tests	2026-11-15T22:01:06.5786829Z 
+msvc-2022	Run regression tests	2026-11-15T22:01:06.5787228Z 100% tests passed, 0 tests failed out of 3
+msvc-2022	Run regression tests	2026-11-15T22:01:06.5788722Z 
+msvc-2022	Run regression tests	2026-11-15T22:01:06.5788957Z Total Test time (real) =  13.71 sec
+msvc-2022	Download official pluginval 1.0.4	﻿2026-11-15T22:01:06.7106826Z ##[group]Run Invoke-WebRequest https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_Windows.zip -OutFile pluginval.zip
+msvc-2022	Download official pluginval 1.0.4	2026-11-15T22:01:06.7108058Z ^[[36;1mInvoke-WebRequest https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_Windows.zip -OutFile pluginval.zip^[[0m
+msvc-2022	Download official pluginval 1.0.4	2026-11-15T22:01:06.7108822Z ^[[36;1mExpand-Archive pluginval.zip pluginval^[[0m
+msvc-2022	Download official pluginval 1.0.4	2026-11-15T22:01:06.7148842Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+msvc-2022	Download official pluginval 1.0.4	2026-11-15T22:01:06.7149259Z ##[endgroup]
+msvc-2022	Validate VST3 at strictness 10	﻿2026-11-15T22:01:07.7771489Z ##[group]Run $validator = (Get-ChildItem pluginval -Recurse -Filter pluginval.exe | Select-Object -First 1).FullName
+msvc-2022	Validate VST3 at strictness 10	2026-11-15T22:01:07.7772475Z ^[[36;1m$validator = (Get-ChildItem pluginval -Recurse -Filter pluginval.exe | Select-Object -First 1).FullName^[[0m
+msvc-2022	Validate VST3 at strictness 10	2026-11-15T22:01:07.7773134Z ^[[36;1mNew-Item -ItemType Directory -Force ci-validation | Out-Null^[[0m
+msvc-2022	Validate VST3 at strictness 10	2026-11-15T22:01:07.7773666Z ^[[36;1m$target = Join-Path $PWD 'build/FET67_artefacts/Release/VST3/FET 67.vst3'^[[0m
+msvc-2022	Validate VST3 at strictness 10	2026-11-15T22:01:07.7774773Z ^[[36;1m$validationArguments = @('--strictness-level','10','--random-seed','61543','--repeat','2','--randomise','--timeout-ms','60000','--output-dir',"$PWD/ci-validation",'--output-filename','pluginval.txt','--validate',('"' + $target + '"'))^[[0m
+msvc-2022	Validate VST3 at strictness 10	2026-11-15T22:01:07.7775955Z ^[[36;1m$process = Start-Process $validator -ArgumentList $validationArguments -Wait -PassThru^[[0m
+msvc-2022	Validate VST3 at strictness 10	2026-11-15T22:01:07.7776682Z ^[[36;1mif ($process.ExitCode -ne 0) { throw "pluginval failed: $($process.ExitCode)" }^[[0m
+msvc-2022	Validate VST3 at strictness 10	2026-11-15T22:01:07.7777548Z ^[[36;1mif (-not (Select-String -Path ci-validation/pluginval.txt -Pattern '^SUCCESS$')) { throw 'Missing pluginval SUCCESS result' }^[[0m
+msvc-2022	Validate VST3 at strictness 10	2026-11-15T22:01:07.7817195Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+msvc-2022	Validate VST3 at strictness 10	2026-11-15T22:01:07.7817583Z ##[endgroup]
+msvc-2022	Run actions/upload-artifact@v4	﻿2026-11-15T22:01:38.0544947Z ##[group]Run actions/upload-artifact@v4
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.0545321Z with:
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.0545533Z   name: FET67-Windows-x64
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.0546146Z   path: build/FET67_artefacts/Release/VST3/
+msvc-2022	Run actions/upload-artifact@v4	build/FET67_artefacts/Release/Standalone/
+msvc-2022	Run actions/upload-artifact@v4	build/Testing/Temporary/LastTest.log
+msvc-2022	Run actions/upload-artifact@v4	ci-validation/
+msvc-2022	Run actions/upload-artifact@v4	
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.0546784Z   if-no-files-found: warn
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.0547000Z   compression-level: 6
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.0547215Z   overwrite: false
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.0547417Z   include-hidden-files: false
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.0547642Z ##[endgroup]
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.2308334Z (node:1092) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.2310268Z (Use `node --trace-deprecation ...` to show where the warning was created)
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.2455058Z Multiple search paths detected. Calculating the least common ancestor of all paths
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.2460630Z The least common ancestor is D:\a\FET67\FET67. This will be the root directory of the artifact
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.2461548Z With the provided path, there will be 7 files uploaded
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.2467473Z Artifact name is valid!
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.2469735Z Root directory input is valid!
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:38.4675783Z Beginning upload of artifact content to blob storage
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:39.1088462Z (node:1092) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:39.2533415Z Uploaded bytes 8388608
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:39.2786860Z Uploaded bytes 8800521
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:39.2968561Z Finished uploading artifact content to blob storage!
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:39.2971210Z SHA256 digest of uploaded artifact zip is b6f39cac7b65ccd35cf5644b7761a4f517fb7eb3c26bb4b4aa47aefed4f43872
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:39.2973474Z Finalizing artifact upload
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:39.6073740Z Artifact FET67-Windows-x64.zip successfully finalized. Artifact ID 14182637034
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:39.6074552Z Artifact FET67-Windows-x64 has been successfully uploaded! Final size is 8800521 bytes. Artifact ID is 14182637034
+msvc-2022	Run actions/upload-artifact@v4	2026-11-15T22:01:39.6083264Z Artifact download URL: https://github.com/papielguapo/FET67/actions/runs/43766184761/artifacts/14182637034
+msvc-2022	Post Run actions/checkout@v4	﻿2026-11-15T22:01:39.6419533Z Post job cleanup.
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:39.8210505Z [command]"C:\Program Files\Git\bin\git.exe" version
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:39.8475494Z git version 2.56.1.windows.1
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:39.8530241Z Temporarily overriding HOME='D:\a\_temp\c4a21dfb-3e9f-4130-93e6-d907deebd660' before making global git config changes
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:39.8531171Z Adding repository directory to the temporary git global config as a safe directory
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:39.8540897Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\FET67\FET67
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:39.8825040Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:39.9101997Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:40.4342902Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:40.4601824Z http.https://github.com/.extraheader
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:40.4648018Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:40.4998895Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:41.1189488Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+msvc-2022	Post Run actions/checkout@v4	2026-11-15T22:01:41.1469767Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+msvc-2022	Complete job	﻿2026-11-15T22:01:41.6197432Z Cleaning up orphan processes
+msvc-2022	Complete job	2026-11-15T22:01:41.6418536Z Terminate orphan process: pid (2612) (vctip)
+msvc-2022	Complete job	2026-11-15T22:01:41.6508327Z Terminate orphan process: pid (7412) (MSBuild)
+msvc-2022	Complete job	2026-11-15T22:01:41.6624169Z Terminate orphan process: pid (5368) (conhost)
+msvc-2022	Complete job	2026-11-15T22:01:41.7007652Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
