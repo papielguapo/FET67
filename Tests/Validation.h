@@ -344,9 +344,38 @@ inline void externalSidechain()
     std::cout<<"EXTERNAL_SC oversized_and_invalid_key allocations="<<allocations<<" PASS\n";
 }
 
+inline void numericEditor()
+{
+    FET67Processor p;auto editor=std::unique_ptr<juce::AudioProcessorEditor>(p.createEditor());
+    auto* face=dynamic_cast<FaceplateComponent*>(editor->getChildComponent(0));
+    require(face!=nullptr,"Missing faceplate");
+    juce::TextEditor* entry=nullptr;std::vector<ValueEntrySlider*> sliders;
+    for(auto* child:face->getChildren())
+    {
+        if(auto* slider=dynamic_cast<ValueEntrySlider*>(child))sliders.push_back(slider);
+        if(auto* text=dynamic_cast<juce::TextEditor*>(child))entry=text;
+    }
+    require(entry!=nullptr&&sliders.size()==5&&!entry->isVisible(),"Numeric field should initially be hidden");
+    sliders[4]->onValueEntry();require(entry->getText()=="4:1","Ratio field does not display the real ratio");entry->onEscapeKey();
+    auto type=[&](int index,const char* text){sliders[index]->onValueEntry();entry->setText(text);entry->onReturnKey();};
+    type(0,"6,25");require(std::abs(p.apvts.getRawParameterValue("input")->load()-6.25f)<1e-5f,"Comma decimal not applied");
+    type(1,"99");require(p.apvts.getRawParameterValue("output")->load()==10,"Numeric output was not clamped");
+    type(2,"2.75");require(p.apvts.getRawParameterValue("attack")->load()==2.75f,"Numeric attack not applied");
+    type(3,"7");require(p.apvts.getRawParameterValue("release")->load()==7,"Numeric release not applied");
+    type(4,"12:1");require(p.apvts.getRawParameterValue("ratio")->load()==2,"Numeric ratio not applied");
+    type(4,"all");require(p.apvts.getRawParameterValue("ratio")->load()==4,"ALL not applied");
+    type(0,"NaN");require(entry->isVisible()&&p.apvts.getRawParameterValue("input")->load()==6.25f,"Invalid entry changed input");
+    entry->onEscapeKey();require(!entry->isVisible(),"Escape did not close numeric field");
+    sliders[0]->onValueEntry();entry->setText("9");entry->onFocusLost();
+    require(p.apvts.getRawParameterValue("input")->load()==6.25f,"Focus loss unexpectedly committed input");
+    type(0,"OFF");require(p.apvts.getRawParameterValue("input")->load()==0,"OFF not applied");
+    require(!entry->isVisible(),"Numeric field remained visible after commit");
+    std::cout<<"NUMERIC_EDITOR decimals clamp ratio invalid escape focus_loss PASS\n";
+}
+
 inline int run()
 {
-    bypassAndMeter();latencyAndRobustness();
+    numericEditor();bypassAndMeter();latencyAndRobustness();
     require(aliasProbe(48000,10000)<-65,"48kHz alias rejection below release threshold");
     require(aliasProbe(44100,10000)<-65,"44.1kHz alias rejection below release threshold");
     blockInvarianceAndPerformance();realtimeAllocation();silenceFloor();fractionalSwitchState();levelMatch();sidechainFilter();externalSidechain();

@@ -1,10 +1,16 @@
 # FET 67 — papielguapo
 
-**Fabricante: papielguapo · 1.2.2 Clean + Sidechain · Windows x64**
+**Fabricante: papielguapo · 1.2.3 Clean + Sidechain · Windows x64**
 
 ![FET 67 con POWER a la izquierda y FIX bajo el medidor](Preview-v1.2.png)
 
 Compresor FET mono/estéreo, C++17/JUCE 9.0.5, VST3 y Standalone. Detector de realimentación, recuperación dependiente del programa y coloración asimétrica. Es un modelo original comparado con CLA-76 Bluey; no se ha demostrado equivalencia 1:1 ni preferencia en escucha ciega.
+
+## Entrada numérica de 1.2.3
+
+Doble clic sobre INPUT, OUTPUT, ATTACK, RELEASE o RATIO abre un campo temporal sobre el mando. **Enter** aplica; **Escape** o perder el foco cancela. No se añaden elementos permanentes a la skin. Admite coma o punto decimal y limita valores numéricos al rango del mando. INPUT acepta también `OFF`; RATIO acepta `4`, `8`, `12`, `20`, `ALL` o las formas `4:1`, `8:1`, etc. Texto inválido conserva el valor anterior y marca el campo en rojo. El cambio se comunica al host como un gesto de automatización.
+
+INPUT/OUTPUT usan 0–10 y ATTACK/RELEASE 1–9, como los números de la skin; el campo no interpreta unidades de tiempo. El doble clic deja de restaurar el valor inicial. [Pruebas de la revisión](Validation/ValueEntry-1.2.3/RESULTADOS.md).
 
 ## Sidechain externo de 1.2.2
 
@@ -63,7 +69,7 @@ Con FIX apagado, INPUT y OUTPUT son completamente manuales y no hay autogain. Lo
 
 Los tiempos son constantes del modelo, no tiempos efectivos certificados frente al hardware. CLIP es un escalón de la escala y no un medidor de true peak. La saturación suave no es un limitador brickwall. El bypass asentado conserva los samples secos exactamente, desplazados los 65 samples declarados.
 
-La interfaz es vectorial: 1634×252, escala 50–250 %, tamaño guardado. Doble clic en un knob restaura el valor inicial.
+La interfaz es vectorial: 1634×252, escala 50–250 %, tamaño guardado. Doble clic en un knob permite escribir su valor.
 
 ## Punto de partida para voz
 
@@ -73,7 +79,7 @@ Se preparó un A/B educativo privado con la voz de Al James, Schoolboy Fascinati
 
 ## Instalar
 
-Descarga el [ZIP de 1.2.2 Clean + Sidechain RC1](https://github.com/papielguapo/FET67/releases/tag/v1.2.2-rc1) y copia la carpeta completa `Binaries/FET 67.vst3` a `C:\Program Files\Common Files\VST3`. Puede requerir permisos de administrador. Cierra instancias cargadas antes de actualizar, reescanea plugins y busca **FET 67 / Papielguapo**. También se entrega Standalone. No se incluye instalador ni firma Authenticode.
+Descarga el [ZIP de 1.2.3 RC1](https://github.com/papielguapo/FET67/releases/tag/v1.2.3-rc1) y copia la carpeta completa `Binaries/FET 67.vst3` a `C:\Program Files\Common Files\VST3`. Puede requerir permisos de administrador. Cierra instancias cargadas antes de actualizar, reescanea plugins y busca **FET 67 / Papielguapo**. También se entrega Standalone. No se incluye instalador ni firma Authenticode.
 
 ## Compilar y validar
 

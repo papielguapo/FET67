@@ -4,6 +4,15 @@
 
 inline constexpr int kBaseWidth = 1634, kBaseHeight = 252;
 
+class ValueEntrySlider final : public juce::Slider
+{
+public:
+    std::function<void()> onValueEntry;
+    void mouseDown(const juce::MouseEvent& event) override
+    { if(event.getNumberOfClicks()<2) juce::Slider::mouseDown(event); }
+    void mouseDoubleClick(const juce::MouseEvent&) override { if(onValueEntry) onValueEntry(); }
+};
+
 class FET67LookAndFeel final : public juce::LookAndFeel_V4
 {
 public:
@@ -21,9 +30,14 @@ public:
 private:
     void timerCallback() override;
     void paintMeter(juce::Graphics&);
+    void beginValueEntry(size_t);
+    void commitValueEntry();
+    void cancelValueEntry();
     FET67Processor& processor;
     FET67LookAndFeel look;
-    std::array<juce::Slider,5> knobs;
+    std::array<ValueEntrySlider,5> knobs;
+    juce::TextEditor valueEntry;
+    int editingKnob = -1;
     std::array<juce::ToggleButton,4> switches;
     using SA = juce::AudioProcessorValueTreeState::SliderAttachment;
     using BA = juce::AudioProcessorValueTreeState::ButtonAttachment;

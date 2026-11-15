@@ -1,4 +1,5 @@
 #include "PluginEditor.h"
+#include <charconv>
 #include <cmath>
 
 namespace
@@ -111,7 +112,9 @@ FaceplateComponent::FaceplateComponent(FET67Processor& p):processor(p)
         s.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);s.setTextBoxStyle(juce::Slider::NoTextBox,false,0,0);
         s.setRotaryParameters(juce::MathConstants<float>::pi*7/6,juce::MathConstants<float>::pi*17/6,true);
         s.setPopupDisplayEnabled(true,true,this);s.setMouseDragSensitivity(180);s.setScrollWheelEnabled(true);
-        s.setDoubleClickReturnValue(true,i==0?4.5:i==1?5.0:i==2?3.0:i==3?4.0:0.0);
+        knobAttachments[i]=std::make_unique<SA>(processor.apvts,ids[i],s);
+        s.setDoubleClickReturnValue(false,0);
+        s.onValueEntry=[this,i]{beginValueEntry(i);};
         s.textFromValueFunction=[i](double v)
         {
             if(i==4) {const char* labels[]{"4:1","8:1","12:1","20:1","ALL"};return juce::String(labels[juce::jlimit(0,4,juce::roundToInt(v))]);}
@@ -120,14 +123,76 @@ FaceplateComponent::FaceplateComponent(FET67Processor& p):processor(p)
             if(i==0&&v<=0)return juce::String("OFF");
             return juce::String(v,2);
         };
-        knobAttachments[i]=std::make_unique<SA>(processor.apvts,ids[i],s);
     }
+    addChildComponent(valueEntry);
+    valueEntry.setMultiLine(false);valueEntry.setJustification(juce::Justification::centred);
+    valueEntry.setSelectAllWhenFocused(true);valueEntry.setFont(juce::Font(juce::FontOptions(16.0f)));
+    valueEntry.setColour(juce::TextEditor::backgroundColourId,juce::Colour(0xff161019));
+    valueEntry.setColour(juce::TextEditor::textColourId,juce::Colours::white);
+    valueEntry.setColour(juce::TextEditor::focusedOutlineColourId,juce::Colour(0xffb84dff));
+    valueEntry.onReturnKey=[this]{commitValueEntry();};
+    valueEntry.onEscapeKey=[this]{cancelValueEntry();};
+    valueEntry.onFocusLost=[this]{cancelValueEntry();};
     const char* switchIds[]{"power","scFilter","meterMode","fix"};
     const char* tips[]{"Power: on / off (latency-aligned dry passthrough)","SC FILTER: 80 Hz high-pass in the detector only; does not cut bass from the audio path. New instances remain stereo-linked.","Meter: gain reduction / output (0 = -18 dBFS RMS)","FIX: RMS output matching to the original input, +/-24 dB; allow a few seconds to settle. Not LUFS or peak limiting."};
     for(size_t i=0;i<switches.size();++i) {auto& b=switches[i];addAndMakeVisible(b);b.setName(switchIds[i]);b.setTitle(tips[i]);b.setTooltip(tips[i]);b.setClickingTogglesState(true);if(i<2)b.getProperties().set("reverse",true);switchAttachments[i]=std::make_unique<BA>(processor.apvts,switchIds[i],b);}
     startTimerHz(60);
 }
-FaceplateComponent::~FaceplateComponent() {stopTimer();setLookAndFeel(nullptr);}
+FaceplateComponent::~FaceplateComponent()
+{
+    stopTimer();valueEntry.onFocusLost=nullptr;valueEntry.onReturnKey=nullptr;valueEntry.onEscapeKey=nullptr;
+    setLookAndFeel(nullptr);
+}
+void FaceplateComponent::beginValueEntry(size_t index)
+{
+    editingKnob=static_cast<int>(index);
+    auto& knob=knobs[index];
+    const bool ratio=index==4;
+    valueEntry.setName(knob.getName()+" value");
+    valueEntry.setTooltip(ratio?"Ratio: 4, 8, 12, 20 or ALL. Enter: apply; Escape: cancel."
+        :knob.getName()+ (index<2?" (0-10)":" (1-9)")+". Enter: apply; Escape: cancel.");
+    valueEntry.setColour(juce::TextEditor::focusedOutlineColourId,juce::Colour(0xffb84dff));
+    valueEntry.setBounds(knob.getBounds().withSizeKeepingCentre(116,30));
+    valueEntry.setText(ratio?knob.getTextFromValue(knob.getValue()):juce::String(knob.getValue(),3),false);
+    valueEntry.setVisible(true);valueEntry.toFront(true);valueEntry.grabKeyboardFocus();valueEntry.selectAll();
+}
+void FaceplateComponent::cancelValueEntry()
+{
+    editingKnob=-1;valueEntry.setVisible(false);
+}
+void FaceplateComponent::commitValueEntry()
+{
+    if(editingKnob<0)return;
+    const int index=editingKnob;
+    auto textValue=valueEntry.getText().trim().replaceCharacter(',','.');
+    double value=0;bool valid=false;
+    if(index==4)
+    {
+        const juce::String labels[]{"4","8","12","20","ALL"};
+        if(textValue.endsWith(":1"))textValue=textValue.dropLastCharacters(2).trim();
+        for(int i=0;i<5;++i)if(textValue.equalsIgnoreCase(labels[i])){value=i;valid=true;break;}
+    }
+    else if(index==0&&textValue.equalsIgnoreCase("OFF")){valid=true;value=0;}
+    else
+    {
+        if(textValue.startsWithChar('+'))textValue=textValue.substring(1);
+        const auto raw=textValue.toStdString();
+        const auto parsed=std::from_chars(raw.data(),raw.data()+raw.size(),value);
+        valid=parsed.ec==std::errc{}&&parsed.ptr==raw.data()+raw.size()&&std::isfinite(value);
+    }
+    if(!valid)
+    {
+        valueEntry.setColour(juce::TextEditor::focusedOutlineColourId,juce::Colours::red);
+        valueEntry.selectAll();return;
+    }
+    auto& knob=knobs[static_cast<size_t>(index)];
+    const char* ids[]{"input","output","attack","release","ratio"};
+    auto* parameter=processor.apvts.getParameter(ids[index]);
+    parameter->beginChangeGesture();
+    knob.setValue(juce::jlimit(knob.getMinimum(),knob.getMaximum(),value),juce::sendNotificationSync);
+    parameter->endChangeGesture();
+    cancelValueEntry();knob.grabKeyboardFocus();
+}
 void FaceplateComponent::resized()
 {
     constexpr int centres[]{374,511,649,787,924};
