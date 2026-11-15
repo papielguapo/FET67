@@ -1,5 +1,7 @@
 # FET 67 — Papielguapo
 
+![Interfaz del plugin FET 67: frontal de aluminio con controles ultravioleta y medidor LED](Preview.png)
+
 Compresor FET mono/estéreo, C++17, JUCE 9.0.5, VST3 y Standalone Windows x64. Código completo, gráficos vectoriales sin imágenes externas y ganancia de entrada/salida exclusivamente manual. Identificadores: fabricante `Papi`, plugin `Ft67`.
 
 ## Probar los binarios
