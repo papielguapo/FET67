@@ -135,7 +135,7 @@ FaceplateComponent::FaceplateComponent(FET67Processor& p):processor(p)
     valueEntry.onFocusLost=[this]{cancelValueEntry();};
     const char* switchIds[]{"power","scFilter","meterMode","fix"};
     const char* tips[]{"Power: on / off (latency-aligned dry passthrough)","SC FILTER: 80 Hz high-pass in the detector only; does not cut bass from the audio path. New instances remain stereo-linked.","Meter: gain reduction / output (0 = -18 dBFS RMS)","FIX: RMS output matching to the original input, +/-24 dB; allow a few seconds to settle. Not LUFS or peak limiting."};
-    for(size_t i=0;i<switches.size();++i) {auto& b=switches[i];addAndMakeVisible(b);b.setName(switchIds[i]);b.setTitle(tips[i]);b.setTooltip(tips[i]);b.setClickingTogglesState(true);if(i<2)b.getProperties().set("reverse",true);switchAttachments[i]=std::make_unique<BA>(processor.apvts,switchIds[i],b);}
+    for(size_t i=0;i<switches.size();++i) {auto& b=switches[i];addAndMakeVisible(b);b.setName(switchIds[i]);b.setTitle(tips[i]);b.setTooltip(tips[i]);b.setClickingTogglesState(true);if(i!=2)b.getProperties().set("reverse",true);switchAttachments[i]=std::make_unique<BA>(processor.apvts,switchIds[i],b);}
     startTimerHz(60);
 }
 FaceplateComponent::~FaceplateComponent()
@@ -298,7 +298,7 @@ void FaceplateComponent::paint(juce::Graphics& g)
     for(int i=0;i<3;++i)
     {
         const float cx=1064+130.0f*static_cast<float>(i);
-        const char* lhs[]{"ON","GR","OFF"};const char* rhs[]{"OFF","OUT","ON"};const char* title[]{"SC FILTER","METER","FIX"};
+        const char* lhs[]{"ON","GR","ON"};const char* rhs[]{"OFF","OUT","OFF"};const char* title[]{"SC FILTER","METER","FIX"};
         g.setColour(colour(0xff1b2225));text(g,lhs[i],cx-44,145,30,15,10);text(g,rhs[i],cx+25,145,35,15,10);text(g,title[i],cx-36,171,82,18,11);
     }
     const bool filtering=processor.apvts.getRawParameterValue("scFilter")->load()>0.5f;
