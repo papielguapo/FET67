@@ -17,7 +17,7 @@ public:
     juce::AudioProcessorParameter* getBypassParameter() const override;
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override { return true; }
-    const juce::String getName() const override { return "FET 67"; }
+    const juce::String getName() const override { return "PAPIELGUAPO - 1167 Compressor"; }
     bool acceptsMidi() const override { return false; }
     bool producesMidi() const override { return false; }
     bool isMidiEffect() const override { return false; }

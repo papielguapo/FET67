@@ -1,4 +1,4 @@
-# FET 67 — papielguapo
+# PAPIELGUAPO - 1167 Compressor
 
 **Fabricante: papielguapo · 1.2.4 Clean + Sidechain · Windows x64**
 
@@ -87,7 +87,7 @@ Se preparó un A/B educativo privado con la voz de Al James, Schoolboy Fascinati
 
 ## Instalar
 
-Descarga el [ZIP de 1.2.4 RC1](https://github.com/papielguapo/FET67/releases/tag/v1.2.4-rc1) y copia la carpeta completa `Binaries/FET 67.vst3` a `C:\Program Files\Common Files\VST3`. Puede requerir permisos de administrador. Cierra instancias cargadas antes de actualizar, reescanea plugins y busca **FET 67 / Papielguapo**. También se entrega Standalone. No se incluye instalador ni firma Authenticode.
+Descarga el [ZIP de 1.2.4 RC1](https://github.com/papielguapo/PAPIELGUAPO-1167-Compressor/releases/tag/v1.2.4-rc1) y copia la carpeta completa `Binaries/PAPIELGUAPO - 1167 Compressor.vst3` a `C:\Program Files\Common Files\VST3`. Puede requerir permisos de administrador. Cierra instancias cargadas antes de actualizar, reescanea plugins y busca **FET 67 / Papielguapo**. También se entrega Standalone. No se incluye instalador ni firma Authenticode.
 
 ## Compilar y validar
 
@@ -103,6 +103,6 @@ CMake usa `C:/JUCE` si contiene JUCE 7/8/9; en su ausencia descarga JUCE 9.0.5 o
 
 El workflow Windows validation compila con Visual Studio 2022, ejecuta CTest y pluginval oficial 1.0.4 nivel 10, y conserva artefactos. Consulta [Validation/STATUS.md](Validation/STATUS.md) y sus logs para distinguir lo comprobado de lo pendiente. Los datos de `Reference/` son históricos de 1.1, no una calibración de 1.2.
 
-El [run independiente 43745547299](https://github.com/papielguapo/FET67/actions/runs/43745547299) validó la revisión histórica 1.2.0. La procedencia y las mediciones de 1.2.1 se registran en [su informe](Validation/Clean-1.2.1/RESULTADOS.md). Los binarios dependen del runtime de Microsoft Visual C++ x64 y de componentes de Windows.
+El [run independiente 43745547299](https://github.com/papielguapo/PAPIELGUAPO-1167-Compressor/actions/runs/43745547299) validó la revisión histórica 1.2.0. La procedencia y las mediciones de 1.2.1 se registran en [su informe](Validation/Clean-1.2.1/RESULTADOS.md). Los binarios dependen del runtime de Microsoft Visual C++ x64 y de componentes de Windows.
 
 La aprobación auditiva, la prueba en FL Studio, otros hosts, el validador independiente de Steinberg y los requisitos de distribución deben registrarse por separado. No se declara validación comercial completa.

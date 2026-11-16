@@ -264,10 +264,10 @@ void FaceplateComponent::paint(juce::Graphics& g)
     }
     for(auto point:{juce::Point<float>(165,53),{165,198},{1417,53},{1417,198}})screw(g,point.x,point.y);
     g.setColour(colour(0xff15191b));g.setFont(font("Arial Black",18,juce::Font::bold));
-    g.drawText("F E T  6 7",68,121,104,23,juce::Justification::centredLeft);
+    g.drawText("67",68,121,104,23,juce::Justification::centredLeft);
     g.setColour(colour(0xffc6cccf));g.fillRect(68.0f,132.0f,95.0f,1.8f);
     g.setColour(colour(0xff171c1f));g.setFont(font("Arial",10.0f,juce::Font::bold));
-    g.drawText("COMPRESSOR",68,145,104,15,juce::Justification::centredLeft);
+    g.drawText("Compressor",68,145,104,15,juce::Justification::centredLeft);
     lamp(g,{206,32,60,60},processor.apvts.getRawParameterValue("power")->load()>0.5f);
     g.setColour(colour(0xff171c1f));text(g,"POWER",197,102,78,18,14);
     text(g,"ON",176,145,35,17,11);text(g,"OFF",258,145,35,17,11);

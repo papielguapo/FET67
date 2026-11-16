@@ -21,7 +21,7 @@ juce_add_plugin(FET67
     IS_MIDI_EFFECT FALSE EDITOR_WANTS_KEYBOARD_FOCUS FALSE
     COPY_PLUGIN_AFTER_BUILD ${FET67_COPY_PLUGIN_AFTER_BUILD}
     PLUGIN_MANUFACTURER_CODE Papi PLUGIN_CODE Ft67
-    FORMATS VST3 Standalone PRODUCT_NAME "FET 67")
+    FORMATS VST3 Standalone PRODUCT_NAME "PAPIELGUAPO - 1167 Compressor")
 target_sources(FET67 PRIVATE Source/PluginProcessor.h Source/PluginProcessor.cpp Source/PluginEditor.h Source/PluginEditor.cpp)
 target_compile_definitions(FET67 PUBLIC JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_VST3_CAN_REPLACE_VST2=0)
 target_link_libraries(FET67 PRIVATE juce::juce_audio_utils juce::juce_dsp PUBLIC juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)

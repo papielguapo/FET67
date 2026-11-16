@@ -31,7 +31,7 @@ jobs:
         run: |
           $validator = (Get-ChildItem pluginval -Recurse -Filter pluginval.exe | Select-Object -First 1).FullName
           New-Item -ItemType Directory -Force ci-validation | Out-Null
-          $target = Join-Path $PWD 'build/FET67_artefacts/Release/VST3/FET 67.vst3'
+          $target = Join-Path $PWD 'build/FET67_artefacts/Release/VST3/PAPIELGUAPO - 1167 Compressor.vst3'
           $validationArguments = @('--strictness-level','10','--random-seed','61543','--repeat','2','--randomise','--timeout-ms','60000','--output-dir',"$PWD/ci-validation",'--output-filename','pluginval.txt','--validate',('"' + $target + '"'))
           $process = Start-Process $validator -ArgumentList $validationArguments -Wait -PassThru
           if ($process.ExitCode -ne 0) { throw "pluginval failed: $($process.ExitCode)" }
