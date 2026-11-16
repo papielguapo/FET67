@@ -1,5 +1,7 @@
 # PAPIELGUAPO - 1167 Compressor
 
+[Descargar el VST3 con el nombre nuevo](https://github.com/papielguapo/PAPIELGUAPO-1167-Compressor/releases/download/v1.2.4-rc1/PAPIELGUAPO-1167-Compressor-Windows-x64.zip). Bundle: `PAPIELGUAPO - 1167 Compressor.vst3`; skin: `67 Compressor`. Esta compilación del cambio de nombre se generó localmente con MSVC 19.51/JUCE 9.0.5; los hashes y artefactos históricos anteriores conservan su procedencia original. Se mantienen fabricante, código de plugin e IDs de parámetros. Las copias instaladas con el nombre anterior se guardaron fuera de las carpetas de escaneo.
+
 **Fabricante: papielguapo · 1.2.4 Clean + Sidechain · Windows x64**
 
 ![FET 67 con POWER a la izquierda y FIX bajo el medidor](Preview-v1.2.png)
