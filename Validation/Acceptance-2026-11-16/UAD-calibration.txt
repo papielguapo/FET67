@@ -1,0 +1,13 @@
+CALIBRATION_STEP 0 input=0.4755 attenuation=24.1727
+CALIBRATION_STEP 1 input=0.23825 attenuation=13.3344
+CALIBRATION_STEP 2 input=0.119625 attenuation=6.57711
+CALIBRATION_STEP 3 input=0.0603125 attenuation=3.63569
+CALIBRATION_STEP 4 input=0.0899687 attenuation=5.15833
+CALIBRATION_STEP 5 input=0.104797 attenuation=5.86231
+CALIBRATION_STEP 6 input=0.112211 attenuation=6.21859
+CALIBRATION_STEP 7 input=0.108504 attenuation=6.04071
+CALIBRATION_STEP 8 input=0.10665 attenuation=5.95132
+CALIBRATION_STEP 9 input=0.107577 attenuation=5.99665
+CALIBRATION_STEP 10 input=0.108041 attenuation=6.01894
+CALIBRATION_STEP 11 input=0.107809 attenuation=6.00704
+CALIBRATION normalized_input=0.107809 effective_attenuation_dB=6.00704 input_text=-49.53 dB

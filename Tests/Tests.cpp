@@ -3,6 +3,7 @@
 #include <juce_audio_utils/juce_audio_utils.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <cmath>
 #include <stdexcept>
 
@@ -52,6 +53,7 @@ void dumpParameters(juce::AudioProcessor& p)
 }
 #include "Validation.h"
 #include "OfflineRender.h"
+#include "Response.h"
 int main(int argc,char** argv)
 {
     juce::ScopedJuceInitialiser_GUI init;
@@ -76,6 +78,12 @@ int main(int argc,char** argv)
             while(!done&&juce::Time::getMillisecondCounter()-start<30000)juce::MessageManager::getInstance()->runDispatchLoopUntil(20);
             require(instance!=nullptr,error.isEmpty()?"Reference load timeout":error.toRawUTF8());
             dumpParameters(*instance);
+            if(argc>3&&(juce::String(argv[3])=="--response"||juce::String(argv[3])=="--calibrate"))
+            {
+                float level=1e-5f;
+                for(int a=4;a<argc;++a){auto pair=juce::StringArray::fromTokens(argv[a],"=","");if(pair.size()==2){if(pair[0]=="level")level=pair[1].getFloatValue();else{int index=pair[0].getIntValue();if(juce::isPositiveAndBelow(index,instance->getParameters().size()))instance->getParameters()[index]->setValueNotifyingHost(pair[1].getFloatValue());}}}
+                require(level>0&&level<=1,"Invalid response level");return juce::String(argv[3])=="--calibrate"?calibrateInput(*instance):settledResponse(*instance,level);
+            }
             if(argc>3&&juce::String(argv[3])=="--external-key-test")
             {validation::hostedExternalSidechain(*instance);return 0;}
             if(argc>3&&(juce::String(argv[3])=="--measure"||juce::String(argv[3])=="--spectrum"||juce::String(argv[3])=="--render-audio"))
@@ -91,6 +99,13 @@ int main(int argc,char** argv)
             return 0;
         }
         FET67Processor p;
+        if(argc>1&&juce::String(argv[1])=="--calibrate-fet")return calibrateInput(p);
+        if(argc>1&&juce::String(argv[1])=="--response-fet")
+        {
+            float level=1e-5f;
+            for(int a=2;a<argc;++a){auto pair=juce::StringArray::fromTokens(argv[a],"=","");if(pair.size()==2){if(pair[0]=="level")level=pair[1].getFloatValue();else if(p.apvts.getParameter(pair[0])!=nullptr)set(p,pair[0],pair[1].getFloatValue());}}
+            require(level>0&&level<=1,"Invalid response level");return settledResponse(p,level);
+        }
         if(argc>3&&juce::String(argv[1])=="--render-fet")
         {
             for(int a=4;a<argc;++a)if(juce::String(argv[a])=="externalBus=1")

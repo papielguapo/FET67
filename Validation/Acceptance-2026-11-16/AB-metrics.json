@@ -1,0 +1,50 @@
+{
+  "Voice-A-1.wav": {
+    "plugin": "UAD",
+    "RMS_dBFS": -24.00000000094909,
+    "peak_dBFS": -7.979359695713828,
+    "samples": 904050,
+    "sample_rate": 44100,
+    "post_gain_dB": 4.208071444518457
+  },
+  "Voice-A-2.wav": {
+    "plugin": "FET",
+    "RMS_dBFS": -24.00000000012698,
+    "peak_dBFS": -9.924984708547322,
+    "samples": 904050,
+    "sample_rate": 44100,
+    "post_gain_dB": 5.536080521648829
+  },
+  "Voice-A-3.wav": {
+    "plugin": "Bluey",
+    "RMS_dBFS": -23.999999999465878,
+    "peak_dBFS": -6.973094410267787,
+    "samples": 904050,
+    "sample_rate": 44100,
+    "post_gain_dB": 2.523726746212776
+  },
+  "Voice-B-1.wav": {
+    "plugin": "Bluey",
+    "RMS_dBFS": -24.000000000570793,
+    "peak_dBFS": -12.900830855309618,
+    "samples": 904050,
+    "sample_rate": 44100,
+    "post_gain_dB": 1.9937073504183258
+  },
+  "Voice-B-2.wav": {
+    "plugin": "UAD",
+    "RMS_dBFS": -24.000000000061235,
+    "peak_dBFS": -12.634473352211408,
+    "samples": 904050,
+    "sample_rate": 44100,
+    "post_gain_dB": 3.6045053589143086
+  },
+  "Voice-B-3.wav": {
+    "plugin": "FET",
+    "RMS_dBFS": -23.99999999987137,
+    "peak_dBFS": -12.800009364667488,
+    "samples": 904050,
+    "sample_rate": 44100,
+    "post_gain_dB": 4.27118154145497
+  }
+}
